@@ -19,3 +19,6 @@ Pipeline will have the traditional segments of "build", "test" and "deploy". It 
 
 ## Kubernetes cluster
 The cluster will contain a singular pod with two containers, one being the application front-end and the other one being the postgreSQL database.
+
+## Service providers
+All services will be run in AWS, paid from my own pocket. 
