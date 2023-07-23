@@ -1,7 +1,7 @@
 # Message board project
 
 ## Introduction
-This project will contain a flask coded image-based messageboard application that will be deployed to a kubernetes cluster. It will implement a rudimentary CI/CD pipeline using Jenkins. The project will be accessible through a hosting service (not yet decided). 
+This project will contain a flask coded image-based messageboard application that will be deployed to a kubernetes cluster. It will implement a rudimentary CI/CD pipeline using Jenkins. The project will be deployed through AWS. 
 
 ## Requirements
 There are certain primary requirements in the project:
@@ -22,4 +22,7 @@ Pipeline will have the traditional segments of "build", "test" and "deploy". It 
 The cluster will contain a singular pod with two containers, one being the application front-end and the other one being the postgreSQL database.
 
 ## Service providers
-All services will be run in AWS, paid from my own pocket. 
+All services will be run in AWS, paid from my own pocket.
+
+## Concerning review
+If course review using all of these external dependencies does not work, I can make one version using the CI/CD deployment system and one without it for review.
