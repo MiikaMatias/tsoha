@@ -1,8 +1,10 @@
-from flask import Flask, Blueprint
+from flask import Flask, request
+
+from components.threads import get_threads
 
 app = Flask(__name__)
 
-threads=[0,1,2,3]
+threads=[0,1,2,3,4]
 
 @app.route('/threads/<int:id>')
 def get_users(id):
@@ -12,7 +14,9 @@ def get_users(id):
 
 @app.route("/")
 def index():
-    return """
+    base_url = request.base_url
+
+    return f"""
 <head>
     <title>
         Messageboard
@@ -26,23 +30,7 @@ def index():
         <h2>
             Threads
         </h2>
-        <p>
-            <p> 
-                one 
-            <p>
-            <p> 
-                two 
-            <p>
-            <p> 
-                three 
-            <p>
-            <p> 
-                four 
-            <p>
-            <p> 
-                five 
-            <p>
-        </p>
+            {get_threads(base_url, threads)}
     </h1>
 </body>
 """
