@@ -1,5 +1,5 @@
 # Message board project
-a
+
 ## Introduction
 This project will contain a flask coded image-based messageboard application that will be deployed to a kubernetes cluster. It will implement a rudimentary CI/CD pipeline using Jenkins. The project will be deployed through AWS. 
 
