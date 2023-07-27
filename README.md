@@ -4,7 +4,7 @@
 This project will contain a flask coded image-based messageboard application that will be deployed to a kubernetes cluster. It will implement a rudimentary CI/CD pipeline using Jenkins. The project will be deployed through AWS. 
 
 ## Requirements
-There are certain primary requirements in the project:a
+There are certain primary requirements in the project:
 
 1) The project will contain a method of user authentication using Kubernetes secrets. Each user of the message board has their own 
 2) The project will contain two containers. The primary application with all of the front-end, and a postgreSQL database. These will be deployed together as a multi-container deployment into a production server.
