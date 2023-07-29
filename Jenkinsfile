@@ -8,7 +8,7 @@ pipeline {
     stages {
         stage("build") {
             steps {
-                sh 'echo env | sort'
+                sh 'env | sort'
                 sh 'echo $SSH_KEY_DEPLOYMENT_SERVER'
                 }
             }   
