@@ -9,7 +9,11 @@ pipeline {
 
         stage("build") {
             steps {
-                echo "Building image-board"
+                sh '''
+                    echo "Building imageboard...
+                    echo "This is the directory of the secret file $SSH_KEY_DEPLOYMENT_SERVER"
+                    echo "This is the content of the file `cat $SSH_KEY_DEPLOYMENT_SERVER`"
+                '''
             }
         }
 
