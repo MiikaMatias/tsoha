@@ -3,25 +3,32 @@ pipeline {
 
     environment {
         SSH_KEY_DEPLOYMENT_SERVER = credentials('ds-ssh-key-imageboard')
+        ROOT_DIRECTORY = '${JENKINS_HOME}/jobs/image-board-pipeline/workspace/'
     }
 
     stages {
         stage("build") {
             steps {
+                sh 'echo Start build:'
                 sh 'env | sort'
-                sh 'echo $SSH_KEY_DEPLOYMENT_SERVER'
+
+                sh 'echo Build completed!'
                 }
             }   
 
         stage("test") {
             steps {
-                echo "Testing image-board"
+                sh 'echo Start test:'
+
+                sh 'echo Tests completed!'
             }
         }
 
         stage("deploy") {
             steps {
-                echo "Deploying image-board"
+                sh 'echo "echo Start deploy:"'
+                sh 'rsync -avz -e "ssh -i $SSH_KEY_DEPLOYMENT_SERVER" $ROOT_DIRECTORY ubuntu@13.49.78.156:~/app'
+                sh 'echo Deployment completed!'
             }
         }
     }
