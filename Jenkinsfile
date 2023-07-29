@@ -12,9 +12,6 @@ pipeline {
                 sh 'echo $SSH_KEY_DEPLOYMENT_SERVER'
                 }
             }   
-}
-
-        }
 
         stage("test") {
             steps {
