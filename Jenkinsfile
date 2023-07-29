@@ -27,7 +27,7 @@ pipeline {
         stage("deploy") {
             steps {
                 sh 'echo "echo Start deploy:"'
-                sh 'rsync -avz -e "ssh -i $SSH_KEY_DEPLOYMENT_SERVER" $ROOT_DIRECTORY ubuntu@13.49.78.156:~/app'
+                sshPublisher(publishers: [sshPublisherDesc(configName: 'ubuntu@13.49.78.156', transfers: [sshTransfer(cleanRemote: false, excludes: '', execCommand: 'echo works', execTimeout: 120000, flatten: false, makeEmptyDirs: false, noDefaultExcludes: false, patternSeparator: '[, ]+', remoteDirectory: '', remoteDirectorySDF: false, removePrefix: '', sourceFiles: '$ROOT_DIRECTORY')], usePromotionTimestamp: false, useWorkspaceInPromotion: false, verbose: true)])                
                 sh 'echo Deployment completed!'
             }
         }
