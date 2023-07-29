@@ -10,7 +10,7 @@ threads=[0,1,2,3,4]
 def get_users(id):
     if id not in threads:
         return "Thread not found", 404
-    return "thread" + str(id)
+    return "thread " + str(id)
 
 @app.route("/")
 def index():
