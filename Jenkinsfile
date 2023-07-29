@@ -1,12 +1,16 @@
 pipeline {
     agent any
 
+    environment {
+        SSH_KEY_DEPLOYMENT_SERVER = credentials('ds-shh-key')
+    }
+
     stages {
 
         stage("build") {
 
             steps {
-                echo "Building image-board"
+                echo "${SSH_KEY_DEPLOYMENT_SERVER}"
             }
         }
 
