@@ -27,7 +27,7 @@ pipeline {
         stage("deploy") {
             steps {
                 sh 'echo "echo Start deploy:"'
-                sshPublisher(publishers: [sshPublisherDesc(configName: 'ubuntu@13.49.78.156', transfers: [sshTransfer(cleanRemote: false, excludes: '', execCommand: 'pwd && touch test', execTimeout: 120000, flatten: false, makeEmptyDirs: false, noDefaultExcludes: false, patternSeparator: '[, ]+', remoteDirectory: '', remoteDirectorySDF: false, removePrefix: '', sourceFiles: '*/*/*/*')], usePromotionTimestamp: false, useWorkspaceInPromotion: false, verbose: true)])   
+                sshPublisher(publishers: [sshPublisherDesc(configName: 'ubuntu@13.49.78.156', transfers: [sshTransfer(cleanRemote: false, excludes: '', execCommand: 'pwd && touch test', execTimeout: 120000, flatten: false, makeEmptyDirs: false, noDefaultExcludes: false, patternSeparator: '[, ]+', remoteDirectory: '', remoteDirectorySDF: false, removePrefix: '', sourceFiles: '*/')], usePromotionTimestamp: false, useWorkspaceInPromotion: false, verbose: true)])   
                 sh 'echo Deployment completed!'
             }
         }
