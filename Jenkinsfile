@@ -9,8 +9,7 @@ pipeline {
 
         stage("build") {
             steps {
-                echo "Start build..."
-                echo "${SSH_KEY_DEPLOYMENT_SERVER}"
+                echo "Building image-board"
             }
         }
 
