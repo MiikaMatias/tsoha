@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        SSH_KEY_DEPLOYMENT_SERVER = 'var'
+        SSH_KEY_DEPLOYMENT_SERVER = credentials('ds-ssh-key-imageboard')
     }
 
     stages {
