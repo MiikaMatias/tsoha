@@ -20,7 +20,7 @@ The development occurs through a very rudimentary [CI/CD pipeline](https://www.i
 After pushing code Jenkins triggers the CI/CD pipeline and each respective phase is ran.
 ![image](https://github.com/MiikaMatias/tsoha/assets/100348027/931a81a8-c23c-4592-92a6-8b25b6c858dd)
 
-Build phase [containerizes](https://aws.amazon.com/what-is/containerization/) the application. Test phase runs small unit tests. Deploy phase sends the containerized applications to production using [SSH](https://www.wikiwand.com/en/Secure_Shell). 
+Build phase [containerizes](https://aws.amazon.com/what-is/containerization/) the application. Test phase runs small unit tests. Deploy phase sends the containerized applications to production using [SSH](https://www.wikiwand.com/en/Secure_Shell). All of this is defined in the [Jenkinsfile](https://github.com/MiikaMatias/tsoha/blob/main/Jenkinsfile)
 
 ### Why do this for such a minor project?
 It's fun
