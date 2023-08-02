@@ -18,7 +18,7 @@ There are certain primary requirements in the project:
 The key learning goal of the project is to be able to set up a holistic web application. While familliar with all of these technologies, I've never implemented a holistic project based on them. Hence, this is somewhat of an integrative exercise. 
 
 ## Jenkins Pipeline
-Pipeline will have the traditional segments of "build", "test" and "deploy". It will be directly attached to the Github repository, and will deploy the product into the production server. 
+Pipeline will have the traditional segments of "build", "test" and "deploy". It will be directly attached to the Github repository, and will deploy the product into the production server. If you'd like to access Jenkins, ask me and give a good reason. 
 
 ## Kubernetes cluster
 The cluster will contain a singular pod with two containers, one being the application front-end and the other one being the postgreSQL database.
