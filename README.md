@@ -8,7 +8,7 @@ This project will contain a flask coded image-based messageboard application tha
 ## Requirements
 There are certain primary requirements in the project:
 
-1) The project will contain a method of user authentication using Kubernetes secrets. Each user of the message board has their own 
+1) The project will contain a method of user authentication using Kubernetes secrets. Each user of the message board has their own passwords and message history. 
 2) The project will contain two containers. The primary application with all of the front-end, and a postgreSQL database. These will be deployed together as a multi-container deployment into a production server.
 3) Each user will be able to make threads into the main page of the application. Each thread contains a chronological sequence of messages with the username, timestamp and images, if applicable. Both messages and threads can be removed by the users who created them, or by possible administrators.
 4) Each user will also be able to access user information and statistics.
