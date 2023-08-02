@@ -13,14 +13,14 @@ The development occurs through a very rudimentary [CI/CD pipeline](https://www.i
       subgraph Jenkins
       Build-->Test
       Test-->Deploy
-      Deploy-->|code sent to production via SSH|Production
+      Deploy-->|containers sent to production via SSH|Production
       end
       end
 ```
 After pushing code Jenkins triggers the CI/CD pipeline and each respective phase is ran.
 ![image](https://github.com/MiikaMatias/tsoha/assets/100348027/931a81a8-c23c-4592-92a6-8b25b6c858dd)
 
-Build phase [containerizes](https://aws.amazon.com/what-is/containerization/) the application. Test phase runs small unit tests. Deploy phase sends the containerized application to production using [SSH](https://www.wikiwand.com/en/Secure_Shell). 
+Build phase [containerizes](https://aws.amazon.com/what-is/containerization/) the application. Test phase runs small unit tests. Deploy phase sends the containerized applications to production using [SSH](https://www.wikiwand.com/en/Secure_Shell). 
 
 ### Why do this for such a minor project?
 It's fun
