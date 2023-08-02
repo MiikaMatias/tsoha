@@ -13,7 +13,9 @@ The development occurs through a very rudimentary [CI/CD pipeline](https://www.i
       subgraph Jenkins
       Build-->Test
       Test-->Deploy
-      Deploy-->|code sent to production|Production
+      Deploy-->|code sent to production via SSH|Production
       end
       end
 ```
+After pushing code Jenkins triggers the CI/CD pipeline and each respective test is ran. Build phase containerizes the application. Test phase runs small unit tests. Deploy phase sends the containerized application to production using SSH. 
+![image](https://github.com/MiikaMatias/tsoha/assets/100348027/931a81a8-c23c-4592-92a6-8b25b6c858dd)
