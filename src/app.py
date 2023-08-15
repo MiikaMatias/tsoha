@@ -1,10 +1,19 @@
 from flask import Flask, request
-
+from flask import redirect, render_template, request
+from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.sql import text
 from components.threads import get_threads
 
 app = Flask(__name__)
-
+app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql:///postgres"
+db = SQLAlchemy(app)
 threads=[0,1,2,3,4]
+
+@app.route("/db")
+def database():
+    result = db.session.execute(text("SELECT content FROM messages"))
+    messages = result.fetchall()
+    return render_template("index.html", count=len(messages), messages=messages) 
 
 @app.route('/threads/<int:id>')
 def get_users(id):

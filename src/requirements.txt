@@ -1,2 +1,6 @@
 Flask==2.3.2
 pytest==7.4.0
+gunicorn
+psycopg2-binary
+flask-sqlalchemy
+psycopg2
