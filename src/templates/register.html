@@ -1,0 +1,41 @@
+<form action="/register" method="POST">
+    <p>email:<br>
+    <input type="text" name="email"></p>        
+    {% if invalid_email %}
+    <p style="color:red;">email does not pass regex test</p>
+    {% endif %}
+    {% if email_exists %}
+    <p style="color:red;">email already exists</p>
+    {% endif %}
+
+    <p>username:<br>
+    <input type="text" name="username"></p>
+    {% if invalid_username %}
+    <p style="color:red;">username is a wee too long or a bit too short...</p>
+    {% endif %}
+    {% if username_exists %}
+    <p style="color:red;">username already exists</p>
+    {% endif %}
+
+    <p>password:<br>
+    <input type="password" name="password"></p>
+    {% if incorrect_pass %}
+    <p style="color:red;">password retype differs from actual password</p>
+    {% endif %}
+    {% if invalid_pass %}
+    <p style="color:red;">password is a wee too long or a bit too short...</p>
+    {% endif %}
+    {% if weak_pass %}
+    <p style="color:red;">password is weak; add more different letters</p>
+    {% endif %}
+
+
+    <p>retype password:<br>
+    <input type="password" name="retype_password"></p>    
+    {% if incorrect_pass %}
+    <p style="color:red;">password retype differs from actual password</p>
+    {% endif %}
+
+    <input type="submit" value="register">
+</form>
+    

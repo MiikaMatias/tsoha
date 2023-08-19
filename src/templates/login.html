@@ -1,0 +1,18 @@
+<center>
+
+<h1>
+    <a href=/threads >
+        Messageboard
+    </a>   
+</h1>
+<form action="/login" method="POST">
+    <h1>Welcome Aboard!</h1>
+    <p>username:<br>
+    <input type="text" name="username"></p>
+    <p>password:<br>
+    <input type="password" name="password"></p>
+    {% if incorrect_pass %}
+    <p style="color:red;">incorrect password</p>
+    {% endif %}    
+    <input type="submit" value="login">
+</center>

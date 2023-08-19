@@ -1,0 +1,51 @@
+{% if session.username %}
+<a href="/">{{ session.username }}</a>
+<a href="/logout" > <p style="font-size : 12px;" >sign out</p></a>
+{% else %}
+<form action="/login" method="POST">
+<p>username:<br>
+<input type="text" name="username"></p>
+<p>password:<br>
+<input type="password" name="password"></p>
+<input type="submit" value="login">
+</form>
+{% endif %}
+
+<h1>
+    <center>
+        <a href=/threads >
+            Messageboard
+        </a>   
+     </center>
+</h1>
+<p>
+    <h2>
+        {{ thread.title }}
+    </h2>
+    <p>
+        {{ thread.content }}        
+    </p>
+</p>
+    {% for message in messages %}
+    <hr>
+    <h3>
+        {{ message.title }} 
+    </h3>
+    <p>
+        {{ message.content }}
+    </p>
+    <p>
+        {{ message.owner }}
+        by: {{ message.username }} at {{ message.created_at }}
+    </p>
+    {% endfor %}
+    <hr>
+<center>
+    <form action=/sendmessage/{{ thread.id }} method="POST">
+        message
+        <br>
+            <textarea name="content" rows="3" cols="40"></textarea>
+        <br>
+        <input type="submit" value="Send">
+        </form>
+</center>
