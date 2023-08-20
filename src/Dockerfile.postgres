@@ -1,0 +1,13 @@
+FROM postgres:alpine
+
+ENV POSTGRES_PORT=$POSTGRES_PORT
+
+COPY imageboard-db.sql /docker-entrypoint-initdb.d/
+
+RUN chown -R postgres:postgres /docker-entrypoint-initdb.d/
+
+EXPOSE $POSTGRES_PORT
+
+RUN chmod -R 777 /var/lib
+
+CMD ["postgres"]

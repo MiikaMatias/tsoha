@@ -1,0 +1,23 @@
+FROM python:3.8-alpine
+
+COPY requirements.txt requirements.txt
+RUN pip3 install -r requirements.txt
+RUN mkdir /app /app/database /app/tools /app/templates /docker-entrypoint-initdb.d
+
+WORKDIR /app
+
+COPY app.py /app/
+COPY .env /app/
+COPY database/. /app/database/
+COPY tools/. /app/tools/
+COPY templates/. /app/templates/
+COPY tools/. /app/templates/
+COPY start.sh /app/
+
+ENV PYTHONPATH /app
+
+RUN chmod -R 777 /var/lib
+
+EXPOSE 5000
+
+CMD ["/bin/sh", "start.sh"]
