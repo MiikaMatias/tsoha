@@ -12,6 +12,7 @@ echo Saved $POSTGRES_IMAGE_NAME $POSTGRES_CONTAINER_NAME to minikube
 
 kubectl delete all --all
 
+kubectl apply -f persistent-volume.yml
 kubectl apply -f imageboard-deployment.yml
 echo Deployed $POSTGRES_CONTAINER_NAME
 echo Deployed $POSTGRES_IMAGE_NAME
