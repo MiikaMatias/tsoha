@@ -27,7 +27,7 @@ pipeline {
         stage("deploy") {
             steps {
                 sh 'echo "echo Start deploy:"'
-                sshPublisher(publishers: [sshPublisherDesc(configName: 'ubuntu@16.171.11.122', transfers: [sshTransfer(cleanRemote: false, excludes: '', execCommand: 'pip install -r app/src/requirements.txt && sudo systemctl restart myproject', execTimeout: 120000, flatten: false, makeEmptyDirs: false, noDefaultExcludes: false, patternSeparator: '[, ]+', remoteDirectory: '', remoteDirectorySDF: false, removePrefix: '', sourceFiles: '*/')], usePromotionTimestamp: false, useWorkspaceInPromotion: false, verbose: true)])   
+                sshPublisher(publishers: [sshPublisherDesc(configName: 'ubuntu@ec2-16-171-153-70.eu-north-1.compute.amazonaws.com', transfers: [sshTransfer(cleanRemote: false, excludes: '', execCommand: 'pip install -r app/src/requirements.txt && sudo systemctl restart myproject', execTimeout: 120000, flatten: false, makeEmptyDirs: false, noDefaultExcludes: false, patternSeparator: '[, ]+', remoteDirectory: '', remoteDirectorySDF: false, removePrefix: '', sourceFiles: '*/')], usePromotionTimestamp: false, useWorkspaceInPromotion: false, verbose: true)])   
                 sh 'echo Deployment completed!'
             }
         }
