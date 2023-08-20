@@ -13,6 +13,11 @@ def get_threads(db):
     result = db.session.execute(text(sql)).fetchall()
     return result
 
+def get_thread_ids(db):
+    sql = f"SELECT id FROM threads;"
+    result = db.session.execute(text(sql)).fetchall()
+    return result
+
 def get_threads_by_username(username, db):
     sql = """SELECT 
     counts.message_count,
