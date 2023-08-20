@@ -1,0 +1,54 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: imageboard-app
+  labels:
+    app: db
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: db
+  template:
+    metadata:
+      labels:
+        app: db
+    spec:
+      containers:
+      - name: psql-db
+        image: psql-db
+        env:
+          - name: POSTGRES_PASSWORD
+            value: password
+        imagePullPolicy: Never
+        volumeMounts:
+          - name: postgres-persistent-storage
+            mountPath: /var/lib/postgresql
+      - name: imageboard-app
+        image: imageboard-app
+        imagePullPolicy: Never
+        volumeMounts:
+          - name: postgres-persistent-storage
+            mountPath: /var/lib/postgresql
+      volumes:
+        - name: postgres-persistent-storage
+          persistentVolumeClaim:
+            claimName: postgres-pv-claim
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: imageboard-app
+  labels:
+    app: imageboard-app
+spec:
+  selector:
+    app: imageboard-app
+  ports:
+  - name: http
+    protocol: TCP
+    port: 80
+    targetPort: 5000
+  type: LoadBalancer
