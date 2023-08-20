@@ -60,7 +60,7 @@ metadata:
   name: flask-app-ingress
 spec:
   rules:
-    - host: ec2-16-171-159-184.eu-north-1.compute.amazonaws.com
+    - host: ec2-13-51-193-247.eu-north-1.compute.amazonaws.com
       http:
         paths:
           - path: /
