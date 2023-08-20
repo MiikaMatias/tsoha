@@ -1,11 +1,17 @@
+source .env
+eval $(minikube docker-env)
+
 bash build/build_postgres.sh
-echo Built Postgres
+echo Built $POSTGRES_CONTAINER_NAME
 bash build/build_imageboard.sh
-echo Built Imageboard
+echo Built $POSTGRES_IMAGE_NAME
 
-bash deploy/deploy_postgres.sh
-echo Deployed postgres
-bash deploy/deploy_imageboard.sh
-echo Deployed imageboard
+docker save $POSTGRES_CONTAINER_NAME | (eval $(minikube -p minikube docker-env) && docker load)
+docker save $POSTGRES_IMAGE_NAME | (eval $(minikube -p minikube docker-env) && docker load)
+echo Saved $POSTGRES_IMAGE_NAME $POSTGRES_CONTAINER_NAME to minikube
 
-docker ps
+kubectl delete all --all
+
+kubectl apply -f imageboard-deployment.yml
+echo Deployed $POSTGRES_CONTAINER_NAME
+echo Deployed $POSTGRES_IMAGE_NAME

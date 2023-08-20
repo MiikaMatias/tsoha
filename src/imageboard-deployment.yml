@@ -51,4 +51,22 @@ spec:
     protocol: TCP
     port: 80
     targetPort: 5000
-  type: LoadBalancer
+  type: ClusterIP
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: flask-app-ingress
+spec:
+  rules:
+    - host: ec2-16-171-159-184.eu-north-1.compute.amazonaws.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: flask-app-service
+                port:
+                  number: 80
