@@ -49,24 +49,6 @@ spec:
   ports:
   - name: http
     protocol: TCP
-    port: 80
+    port: 8080
     targetPort: 5000
   type: NodePort
-
----
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  name: flask-app-ingress
-spec:
-  rules:
-    - host: ec2-13-48-135-82.eu-north-1.compute.amazonaws.com
-      http:
-        paths:
-          - path: /
-            pathType: Prefix
-            backend:
-              service:
-                name: flask-app-service
-                port:
-                  number: 80
