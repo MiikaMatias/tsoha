@@ -1,3 +1,4 @@
+
 {% if session.username %}
 <a href="/">{{ session.username }}</a>
 <a href="/logout" > <p style="font-size : 12px;" >sign out</p></a>
@@ -48,4 +49,15 @@
         <br>
         <input type="submit" value="Send">
         </form>
+
+{% with messages = get_flashed_messages() %}
+{% if messages %}
+    <ul class=flashes>
+    {% for message in messages %}
+    <p style="color:red;">{{ message }}</p>
+    {% endfor %}
+    </ul>
+{% endif %}
+{% endwith %}
 </center>
+

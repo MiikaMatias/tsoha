@@ -1,4 +1,4 @@
-from flask import Flask, request
+from flask import Flask, request, flash
 from flask import redirect, render_template, request, session
 from flask_sqlalchemy import SQLAlchemy
 from database.threads import get_threads, get_thread_by_id, get_threads_by_username, get_thread_ids
@@ -106,22 +106,41 @@ def register():
     
 @app.route("/sendmessage/<int:id>", methods=['POST'])
 def send_message(id):
-    owner_id = get_user_id(session['username'], db)
-    content = request.form['content']
-    # migrate to components | rename components
-    sql = "INSERT INTO messages (thread_id, owner_id, content, created_at) VALUES (:id, :owner_id, :content, NOW());"
-    db.session.execute(text(sql), {"id":id, "owner_id":owner_id, "content":content})
-    db.session.commit()
+    try:
+        owner_id = get_user_id(session['username'], db)
+        content = request.form['content']
+        if content == '':
+            flash('write content', 'error')
+            return redirect(f'/threads/{id}')
+        # migrate to components | rename components
+        sql = "INSERT INTO messages (thread_id, owner_id, content, created_at) VALUES (:id, :owner_id, :content, NOW());"
+        db.session.execute(text(sql), {"id":id, "owner_id":owner_id, "content":content})
+        db.session.commit()
+    except KeyError:
+        flash('Please sign in to comment', 'error')
     return redirect(f'/threads/{id}')
+
 
 @app.route("/createthread", methods=['POST'])
 def create_thread():
-    owner_id = get_user_id(session['username'], db)
-    title = request.form['title']
-    content = request.form['content']
-    # migrate to components | rename components
-    sql = "INSERT INTO threads (owner_id, title, content, created_at) VALUES (:owner_id, :title, :content, NOW());"
-    db.session.execute(text(sql), {"owner_id":owner_id, "title": title, "content":content})
-    db.session.commit()
-    return redirect(f'/threads')
+    try:
+        owner_id = get_user_id(session['username'], db)
+        title = request.form['title']
+        if title == '':
+            flash('write a title', 'error')
+            return redirect('/threads')
+        content = request.form['content']
+        if content == '':
+            flash('write content', 'error')
+            return redirect('/threads')
+        # migrate to components | rename components
+        sql = "INSERT INTO threads (owner_id, title, content, created_at) VALUES (:owner_id, :title, :content, NOW());"
+        db.session.execute(text(sql), {"owner_id":owner_id, "title": title, "content":content})
+        db.session.commit()
+    except KeyError:
+        flash('Please sign in to make threads', 'error')
+    return redirect('/threads')
+
+
+
 
