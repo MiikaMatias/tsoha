@@ -28,3 +28,16 @@ All services will be run in AWS, paid from my own pocket.
 
 ## Concerning review
 If course review using all of these external dependencies does not work, I can make one version using the CI/CD deployment system and one without it for review.
+
+
+# How to run locally
+
+1) Create a python virtual environment and install the requirements.txt files there
+
+2) Make sure your postgresql server is running
+
+3) Initialize database with sql schema
+
+'psql  -U [username] -d [db-name] -f imageboard-db.sql'
+
+replace DATABASE_URL in the app.py and SECRET_KEY in .env with your personal values

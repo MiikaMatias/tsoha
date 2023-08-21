@@ -18,8 +18,8 @@ POSTGRES_PORT=getenv('POSTGRES_PORT')
 POSTGRES_CONTAINER_NAME=getenv('POSTGRES_CONTAINER_NAME')
 
 #DATABASE_URL = f'postgresql://{POSTGRES_NAME}:{POSTGRES_PASSWORD}@localhost:{POSTGRES_HOST_PORT}/{DATABASE_NAME}'
-DATABASE_URL = f"postgresql://{POSTGRES_NAME}:password@localhost:{POSTGRES_PORT}/{POSTGRES_NAME}"
-
+#DATABASE_URL = f"postgresql://{POSTGRES_NAME}:password@localhost:{POSTGRES_PORT}/{POSTGRES_NAME}"
+DATABASE_URL = f"postgresql:///imageboard-db"
 app = Flask(__name__)
 
 app.secret_key = SECRET_KEY
@@ -29,7 +29,10 @@ db = SQLAlchemy(app)
 
 @app.route('/', methods=['GET'])
 def landing():
-    return render_template('landing.html', threads=get_threads_by_username(session['username'], db))
+    try:
+        return render_template('landing.html', threads=get_threads_by_username(session['username'], db))
+    except KeyError:
+        return redirect('/threads')
 
 @app.route('/threads/<int:id>', methods=['GET'])
 def get_thread(id):
@@ -65,15 +68,17 @@ def login():
     username = request.form["username"]
     password = request.form["password"]
     latest_path = get_latests_path(request.referrer)
-
-    if password_compare(username, password, db):
-        session["username"] = username
-        return redirect("/threads")
-    else:
-        if latest_path == '/threads':
-            return redirect("/threads?incorrect_pass=True")
-        elif latest_path == '/loginpage':
-            return redirect("/loginpage?incorrect_pass=True")
+    try:
+        if password_compare(username, password, db):
+            session["username"] = username
+            return redirect("/threads")
+        else:
+            if latest_path == '/threads':
+                return redirect("/threads?incorrect_pass=True")
+            elif latest_path == '/loginpage':
+                return redirect("/loginpage?incorrect_pass=True")
+    except TypeError:
+        return redirect('/threads')
 
 @app.route("/logout", methods=['GET'])
 def logout():
