@@ -1,5 +1,5 @@
 # Message board project
-[Production](http://ec2-16-171-11-122.eu-north-1.compute.amazonaws.com/)
+[Production](http://ec2-13-48-177-96.eu-north-1.compute.amazonaws.com:30010/threads)
 
 [Architecture](https://github.com/MiikaMatias/tsoha/blob/main/docs/Architecture.md)
 ## Introduction
