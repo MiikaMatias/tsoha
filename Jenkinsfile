@@ -19,7 +19,7 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    def customImage = docker.build("${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}", "-f /src/Dockerfile.imageboard .")
+                    def dockerImage = docker.build(customImageTag, "./src", "-f Dockerfile.imageboard")
                 }
             }
         }
