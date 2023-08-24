@@ -11,7 +11,7 @@ pipeline {
         stage('Read .env file') {
             steps{
                 script {
-                    cat ENV_PATH
+                    sh 'cat ${ENV_PATH}'
                 }
             }
         }
