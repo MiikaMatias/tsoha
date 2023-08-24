@@ -8,13 +8,21 @@ pipeline {
     }
 
     stages {
-        stage('Read .env file') {
-            steps{
+        stage('Checkout') {
+            steps {
                 script {
-                    sh 'cat ${ENV_PATH}'
+                    checkout([$class: 'GitSCM', branches: [[name: 'master']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[url: 'https://github.com/MiikaMatias/tsoha.git']]])
                 }
             }
         }
+        stage('Read Files') {
+            steps {
+                script {
+                    def fileContents = readFile('/src/.env')
+                    echo "Contents of file.txt: ${fileContents}"
+                }
+            }
+
     }
     
 }
