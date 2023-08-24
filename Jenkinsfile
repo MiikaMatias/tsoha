@@ -37,7 +37,7 @@ pipeline {
 
         stage("build") {
             steps {
-                    withAWS(credentials:, region:) {
+                    withAWS(credentials:'a', region:'a') {
                     script {
                         sh 'docker build -t $IMAGEBOARD_IMAGE_NAME -f Dockerfile.imageboard .'
                         sh 'docker tag $IMAGEBOARD_IMAGE_NAME:latest $IMAGE_TAG:$IMAGEBOARD_IMAGE_NAME'
@@ -61,7 +61,7 @@ pipeline {
 
         stage("deploy") {
             steps {
-                withAWS(credentials:, region:) {
+                withAWS(credentials:'a', region:'a') {
                     script {
                     sh 'echo "echo Start deploy:"'
 
