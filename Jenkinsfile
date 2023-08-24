@@ -4,15 +4,50 @@ pipeline {
     environment {
         SSH_KEY_DEPLOYMENT_SERVER = credentials('ds-ssh-key-imageboard')
         ROOT_DIRECTORY = '${JENKINS_HOME}/jobs/image-board-pipeline/workspace/'
+        ENV_PATH = "$ROOT_DIRECTORY/src/.env" 
     }
 
+
     stages {
+        stage('Read .env file') {
+            steps{
+                script {
+                    cat ENV_PATH
+                    // Read the .env file and load its content into a map
+                    def envFile = readFile(ENV_PATH)
+                    def envMap = [:]
+                    envFile.readLines().each { line ->
+                        def (key, value) = line.tokenize('=')
+                        envMap[key] = value
+                    }
+
+                    // Set the environment variables using withEnv
+                    withEnv(envMap) {
+                        echo "DB_HOST: ${env.DB_HOST}"
+                        echo "DB_PORT: ${env.DB_PORT}"
+                        echo "DB_USER: ${env.DB_USER}"
+                        echo "DB_PASS: ${env.DB_PASS}"
+                        
+                        // You can now use these variables in your build steps
+                        // For example, you can use them in a shell step
+                        sh 'echo $DB_HOST'
+                    }
+            }
+        }
+
         stage("build") {
             steps {
-                sh 'echo Start build:'
-                sh 'env | sort'
-
-                sh 'echo Build completed!'
+                    withAWS(credentials:, region:) {
+                    script {
+                        sh 'docker build -t $IMAGEBOARD_IMAGE_NAME -f Dockerfile.imageboard .'
+                        sh 'docker tag $IMAGEBOARD_IMAGE_NAME:latest $IMAGE_TAG:$IMAGEBOARD_IMAGE_NAME'
+                        sh 'docker push $IMAGE_TAG:$IMAGEBOARD_IMAGE_NAME'
+            
+                        sh 'docker build -t $IMAGEBOARD_IMAGE_NAME -f Dockerfile.imageboard .'
+                        sh 'docker tag $IMAGEBOARD_IMAGE_NAME:latest $IMAGE_TAG:$IMAGEBOARD_IMAGE_NAME'
+                        sh 'docker push $IMAGE_TAG:$IMAGEBOARD_IMAGE_NAME'
+                    }
+                    }
                 }
             }   
 
@@ -26,9 +61,16 @@ pipeline {
 
         stage("deploy") {
             steps {
-                sh 'echo "echo Start deploy:"'
-                sshPublisher(publishers: [sshPublisherDesc(configName: 'ubuntu@ec2-13-51-176-89.eu-north-1.compute.amazonaws.com', transfers: [sshTransfer(cleanRemote: false, excludes: '', execCommand: 'pip install -r app/src/requirements.txt && sudo systemctl restart myproject', execTimeout: 120000, flatten: false, makeEmptyDirs: false, noDefaultExcludes: false, patternSeparator: '[, ]+', remoteDirectory: '', remoteDirectorySDF: false, removePrefix: '', sourceFiles: '*/')], usePromotionTimestamp: false, useWorkspaceInPromotion: false, verbose: true)])   
-                sh 'echo Deployment completed!'
+                withAWS(credentials:, region:) {
+                    script {
+                    sh 'echo "echo Start deploy:"'
+
+                    sh ('aws eks update-kubeconfig --name $EKS_CLUSTER_NAME --region $REGION')
+                    sh 'kubectl apply -f'
+
+                    sh 'echo Deployment completed!'
+                    }
+                }
             }
         }
     }
