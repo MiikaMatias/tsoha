@@ -7,24 +7,23 @@ from database.users import insert_user, password_compare, get_user_id
 from sqlalchemy.sql import text
 from tools.validate import get_wrong_string
 from tools.tools import get_latests_path
-from os import getenv
+from os import environ as env
 
-SECRET_KEY = getenv('SECRET_KEY')
-POSTGRES_PASSWORD = getenv('PASSWORD_DOCKER_SQL')
-POSTGRES_NAME = getenv('POSTGRES_NAME')
-DATABASE_NAME = getenv('DATABASE_NAME')
-POSTGRES_HOST_PORT=getenv('POSTGRES_HOST_PORT')
-POSTGRES_PORT=getenv('POSTGRES_PORT')
-POSTGRES_CONTAINER_NAME=getenv('POSTGRES_CONTAINER_NAME')
+SECRET_KEY = env['SECRET_KEY']
+DATABASE_USERNAME= env['DATABASE_USERNAME']
+DATABASE_PASSWORD= env['DATABASE_PASSWORD']
+DATABASE_PORT= env['DATABASE_PORT']
+DATABASE_SERVICE = env['DATABASE_SERVICE_NAME']
+DATABASE_NAME= env['DATABASE_NAME']
 
-#DATABASE_URL = f'postgresql://{POSTGRES_NAME}:{POSTGRES_PASSWORD}@localhost:{POSTGRES_HOST_PORT}/{DATABASE_NAME}'
-#DATABASE_URL = f"postgresql://{POSTGRES_NAME}:password@localhost:{POSTGRES_PORT}/{POSTGRES_NAME}"
-DATABASE_URL = f"postgresql:///imageboard-db"
+DATABASE_URL = f"postgresql://{DATABASE_USERNAME}:{DATABASE_PASSWORD}@{DATABASE_SERVICE}:{DATABASE_PORT}/{DATABASE_NAME}"
+print(DATABASE_URL)
+
 app = Flask(__name__)
 
 app.secret_key = SECRET_KEY
-
 app.config["SQLALCHEMY_DATABASE_URI"] = DATABASE_URL
+
 db = SQLAlchemy(app)
 
 @app.route('/', methods=['GET'])
@@ -140,6 +139,18 @@ def create_thread():
     except KeyError:
         flash('Please sign in to make threads', 'error')
     return redirect('/threads')
+
+@app.route('/deletemessage', methods=['POST'])
+def delete_message():
+    timestamp = request.form['timestamp']
+    username = request.form['username']
+
+    sql = """DELETE FROM messages
+             WHERE created_at = (:timestamp)
+             AND username = (:username);"""
+
+    db.session.execute(text(sql), {"username":username, "timestamp": timestamp})
+
 
 
 
