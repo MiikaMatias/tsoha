@@ -1,18 +1,16 @@
 source .env
-eval $(minikube docker-env)
+
+sudo aws --region $REGION ecr get-login-password | docker login --username AWS --password-stdin $IMAGE_TAG
+sudo kubectl create secret generic $ENVIRONMENT_NAME --from-env-file=.env
 
 bash build/build_postgres.sh
 echo Built $POSTGRES_CONTAINER_NAME
 bash build/build_imageboard.sh
 echo Built $POSTGRES_IMAGE_NAME
 
-docker save $POSTGRES_CONTAINER_NAME | (eval $(minikube -p minikube docker-env) && docker load)
-docker save $POSTGRES_IMAGE_NAME | (eval $(minikube -p minikube docker-env) && docker load)
-echo Saved $POSTGRES_IMAGE_NAME $POSTGRES_CONTAINER_NAME to minikube
+sudo kubectl delete all --all
 
-kubectl delete all --all
-
-kubectl apply -f persistent-volume.yml
-kubectl apply -f imageboard-deployment.yml
+bash deploy/deploy.sh
+sudo kubectl apply -f deployment.yml
 echo Deployed $POSTGRES_CONTAINER_NAME
 echo Deployed $POSTGRES_IMAGE_NAME
