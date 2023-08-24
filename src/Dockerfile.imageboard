@@ -7,7 +7,6 @@ RUN mkdir /app /app/database /app/tools /app/templates /docker-entrypoint-initdb
 WORKDIR /app
 
 COPY app.py /app/
-COPY .env /app/
 COPY database/. /app/database/
 COPY tools/. /app/tools/
 COPY templates/. /app/templates/
