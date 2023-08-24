@@ -22,7 +22,7 @@ pipeline {
                     echo "Contents of file.txt: ${fileContents}"
                 }
             }
+        }
 
     }
-    
 }
