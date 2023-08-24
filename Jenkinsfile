@@ -35,45 +35,6 @@ pipeline {
             }
         }
         }
-
-        stage("build") {
-            steps {
-                    withAWS(credentials:'a', region:'a') {
-                    script {
-                        sh 'docker build -t $IMAGEBOARD_IMAGE_NAME -f Dockerfile.imageboard .'
-                        sh 'docker tag $IMAGEBOARD_IMAGE_NAME:latest $IMAGE_TAG:$IMAGEBOARD_IMAGE_NAME'
-                        sh 'docker push $IMAGE_TAG:$IMAGEBOARD_IMAGE_NAME'
-            
-                        sh 'docker build -t $IMAGEBOARD_IMAGE_NAME -f Dockerfile.imageboard .'
-                        sh 'docker tag $IMAGEBOARD_IMAGE_NAME:latest $IMAGE_TAG:$IMAGEBOARD_IMAGE_NAME'
-                        sh 'docker push $IMAGE_TAG:$IMAGEBOARD_IMAGE_NAME'
-                    }
-                    }
-                }
-            }   
-
-        stage("test") {
-            steps {
-                sh 'echo Start test:'
-
-                sh 'echo Tests completed!'
-            }
-        }
-
-        stage("deploy") {
-            steps {
-                withAWS(credentials:'a', region:'a') {
-                    script {
-                    sh 'echo "echo Start deploy:"'
-
-                    sh ('aws eks update-kubeconfig --name $EKS_CLUSTER_NAME --region $REGION')
-                    sh 'kubectl apply -f'
-
-                    sh 'echo Deployment completed!'
-                    }
-                }
-            }
-        }
     }
     
 }
