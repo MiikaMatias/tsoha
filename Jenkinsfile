@@ -12,7 +12,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git url: 'https://github.com/MiikaMatias/tsoha.git'
+                checkout scm
             }
         }
 
