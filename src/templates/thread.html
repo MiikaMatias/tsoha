@@ -1,71 +1,53 @@
+{% extends "layout.html" %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Messageboard</title>
+</head>
+<body>
+    {% block content %}
+    <h1 align="center">
+        <a href="/threads">Messageboard</a>
+    </h1>
 
-{% if session.username %}
-<a href="/">{{ session.username }}</a>
-<a href="/logout" > <p style="font-size : 12px;" >sign out</p></a>
-{% else %}
-<form action="/login" method="POST">
-<p>username:<br>
-<input type="text" name="username"></p>
-<p>password:<br>
-<input type="password" name="password"></p>
-<input type="submit" value="login">
-<input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
-</form>
-{% endif %}
+    <h2>{{ thread.title }}</h2>
+    <p>{{ thread.content }}</p>
 
-<h1>
-    <center>
-        <a href=/threads >
-            Messageboard
-        </a>   
-     </center>
-</h1>
-<p>
-    <h2>
-        {{ thread.title }}
-    </h2>
-    <p>
-        {{ thread.content }}        
-    </p>
-</p>
     {% for message in messages %}
-    <hr>
-    <h3>
-        {{ message.title }} 
-    </h3>
-    <p>
-        {{ message.content }}
-    </p>
-    <p>
-        {{ message.owner }}
-        by: {{ message.username }} at {{ message.created_at }}
-    </p>
-    <form id="deleteForm" action="/deletemessage" method="POST">
-        <input type="hidden" name="msg_id" value="{{ message.id }}">
-        <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
-        <a href="#" onclick="document.getElementById('deleteForm').submit(); return false;">
-          <p style="font-size: 12px;">delete</p>          
-    </form>
-{% endfor %}
-    <hr>
-<center>
-    <form action=/sendmessage/{{ thread.id }} method="POST">
-        message
-        <br>
-            <textarea name="content" rows="3" cols="40"></textarea>
-        <br>
-        <input type="submit" value="Send">
-        <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
-    </form>
-
-{% with messages = get_flashed_messages() %}
-{% if messages %}
-    <ul class=flashes>
-    {% for message in messages %}
-    <p style="color:red;">{{ message }}</p>
+        <hr>
+        <h3>{{ message.title }}</h3>
+        <p>{{ message.content }}</p>
+        <p>{{ message.owner }} by: {{ message.username }} at {{ message.created_at }}</p>
+        <form id="deleteForm" action="/deletemessage" method="POST">
+            <input type="hidden" name="msg_id" value="{{ message.id }}">
+            <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+            <a href="#" onclick="document.getElementById('deleteForm').submit(); return false;">
+                <p style="font-size: 12px;">Delete</p>
+            </a>
+        </form>
     {% endfor %}
-    </ul>
-{% endif %}
-{% endwith %}
-</center>
+    <hr>
 
+    <center>
+        <form action="/sendmessage/{{ thread.id }}" method="POST">
+            <label for="content">Message:</label><br>
+            <textarea name="content" rows="3" cols="40"></textarea><br>
+            <input type="submit" value="Send">
+            <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+        </form>
+    
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <ul class="flashes">
+            {% for message in messages %}
+                <p style="color:red;">{{ message }}</p>
+            {% endfor %}
+            </ul>
+        {% endif %}
+        {% endwith %}
+    </center>
+    {% endblock %}
+</body>
+</html>

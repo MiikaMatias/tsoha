@@ -1,41 +1,64 @@
-<form action="/register" method="POST">
-    <p>email:<br>
-    <input type="text" name="email"></p>        
-    {% if invalid_email %}
-    <p style="color:red;">email does not pass regex test</p>
-    {% endif %}
-    {% if email_exists %}
-    <p style="color:red;">email already exists</p>
-    {% endif %}
+{% extends "layout.html" %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register</title>
+</head>
+<body>
+    {% block content %}
+    <center>
+        <h1>Register</h1>
+        <form action="/register" method="POST">
+            <label for="email">Email:</label><br>
+            <input type="text" name="email"><br>
 
-    <p>username:<br>
-    <input type="text" name="username"></p>
-    {% if invalid_username %}
-    <p style="color:red;">username is a wee too long or a bit too short...</p>
-    {% endif %}
-    {% if username_exists %}
-    <p style="color:red;">username already exists</p>
-    {% endif %}
+            {% if invalid_email %}
+                <p style="color:red;">Email does not pass regex test</p>
+            {% endif %}
 
-    <p>password:<br>
-    <input type="password" name="password"></p>
-    {% if incorrect_pass %}
-    <p style="color:red;">password retype differs from actual password</p>
-    {% endif %}
-    {% if invalid_pass %}
-    <p style="color:red;">password is a wee too long or a bit too short...</p>
-    {% endif %}
-    {% if weak_pass %}
-    <p style="color:red;">password is weak; add more different letters</p>
-    {% endif %}
+            {% if email_exists %}
+                <p style="color:red;">Email already exists</p>
+            {% endif %}
 
-    <p>retype password:<br>
-    <input type="password" name="retype_password"></p>    
-    {% if incorrect_pass %}
-    <p style="color:red;">password retype differs from actual password</p>
-    {% endif %}
+            <label for="username">Username:</label><br>
+            <input type="text" name="username"><br>
 
-    <input type="submit" value="register">
-    <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
-</form>
-    
+            {% if invalid_username %}
+                <p style="color:red;">Username is either too long or too short</p>
+            {% endif %}
+
+            {% if username_exists %}
+                <p style="color:red;">Username already exists</p>
+            {% endif %}
+
+            <label for="password">Password:</label><br>
+            <input type="password" name="password"><br>
+
+            {% if incorrect_pass %}
+                <p style="color:red;">Password retype differs from actual password</p>
+            {% endif %}
+
+            {% if invalid_pass %}
+                <p style="color:red;">Password is either too long or too short</p>
+            {% endif %}
+
+            {% if weak_pass %}
+                <p style="color:red;">Password is weak; add more different characters</p>
+            {% endif %}
+
+            <label for="retype_password">Retype Password:</label><br>
+            <input type="password" name="retype_password"><br>
+
+            {% if incorrect_pass %}
+                <p style="color:red;">Password retype differs from actual password</p>
+            {% endif %}
+
+            <input type="submit" value="Register">
+            <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+        </form>
+    </center>
+    {% endblock %}
+</body>
+</html>

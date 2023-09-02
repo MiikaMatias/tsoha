@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Messageboard</title>
+    <style>
+            .custom-p {
+        display: inline-block;
+        margin-right: 20px; 
+        }
+
+          .custom-hr-bot {
+            top: -10px;
+            background-color: #000;
+            position: relative;
+        }
+
+        .custom-hr-top {
+            top: 10px;
+            background-color: #000;
+            position: relative;
+        }
+
+
+        body {
+            margin: 0;
+            padding: 175px 0px 70px 0px;
+            background-color: #b3e9b6;
+            color: #000000;
+            font-family: Arial, sans-serif;
+        }
+    
+        header {
+            padding: 0 20px 0 0;
+            background-color: #cab48c;
+            color: #ffffff;
+            text-align: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1;
+        }
+    
+        header::before,
+        header::after {
+            content: "";
+            display: block;
+            height: 5px; /* Adjust the height as needed */
+            background-color: #000;
+            position: absolute;
+            top: -5px; /* Adjust the position as needed */
+            left: 0;
+            right: 0;
+        }
+    
+        h1 {
+            width: 100%;
+        }
+    
+        footer {
+            background-color: #cab48c;
+            color: #ffffff;
+            text-align: center;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1;
+        }
+    
+        footer::before,
+        footer::after {
+            content: "";
+            display: block;
+            height: 5px; /* Adjust the height as needed */
+            background-color: #000;
+            position: absolute;
+            bottom: -5px; /* Adjust the position as needed */
+            left: 0;
+            right: 0;
+        }
+    
+        .sidebar {
+            background-color: #f0f0f0;
+            width: 200px;
+            padding: 20px;
+            position: fixed;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 2;
+        }
+    
+        .sidebar a {
+            display: block;
+            margin-bottom: 10px;
+            text-decoration: none;
+            color: #000;
+        }
+    
+        .separator {
+            width: 2px;
+            background-color: #000;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            right: 200px; /* Width of the sidebar */
+        }
+    </style>    
+</head>
+<body>
+    <header>
+        <center>
+            <h1><a href="/threads">Messageboard</a></h1>
+        </center>
+        {% if session.username %}
+            <nav>
+                <a href="/">{{ session.username }}</a>
+                <a href="/logout">
+                    <p style="font-size: 12px;">Sign Out</p>
+                </a>
+            </nav>
+        {% else %}
+            <form action="/login" method="POST">
+                <p class="custom-p">Username:<br>
+                <input type="text" name="username"></p>
+                <p class="custom-p">Password:<br>
+                <input type="password" name="password"></p>
+                {% if incorrect_pass %}
+                    <p style="color:red,custom-p;">Incorrect Password</p>
+                {% endif %}
+                <input type="submit" value="Login">
+                <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+                <a href="/register/menu"><p class="custom-p">Register</p></a>
+            </form>
+        {% endif %}
+        <hr class="custom-hr-top">
+    </header>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <h2>Categories</h2>
+        <a href="#">Category 1</a>
+        <a href="#">Category 2</a>
+        <a href="#">Category 3</a>
+        <a href="#">Category 4</a>
+        <a href="#">Category 5</a>
+        <a href="#">Category 6</a>
+        <a href="#">Category 7</a>
+        <a href="#">Category 8</a>
+        <a href="#">Category 9</a>
+        <a href="#">Category 10</a>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        {% block content %}{% endblock %}
+    </div>
+
+    
+
+    <footer>
+        <hr class="custom-hr-bot">
+        <div>
+            <p>Creator: Miika Piiparinen</p>
+            <p>Contact Info: miikapiiparinen24@gmail.com</p>
+        </div>
+    </footer>
+
+    <script>
+        const sidebarToggle = document.getElementById('sidebar-toggle');
+        const sidebar = document.getElementById('sidebar');
+
+        sidebarToggle.addEventListener('click', () => {
+            sidebar.classList.toggle('collapsed');
+        });
+    </script>
+</body>
+</html>

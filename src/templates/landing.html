@@ -1,47 +1,55 @@
-<center>
-    <h1>
-        <a href=/threads >
-            Messageboard
-        </a>   
-    </h1>
-    {% if session.username %}
-    <p>Welcome to the site, {{ session.username }}!</p>
-    {% if threads %}
-    <p>Your threads:</p>
-    {% for thread in threads %}
-    <hr>
-    <p>
-        <a href=/threads/{{ thread.id }}>
-            <h2>{{ thread.title }}</h2>
-        </a> 
-        <p>
-            {{ thread.content }}
-        </p>
-        <p>
-            posted at {{ thread.created_at }}
-        </p>
-        <p>
-            messages: {{ thread.message_count }}
-        </p>
-    </p>
-    {% endfor %}
-    </hr>    <hr>
-    {% else %}
-    Looks like you don't have any threads yet!
-    <hr>
-    {% endif %}
-    {% else %}
-    <form action="/login" method="POST">
-        <h2>Welcome!</h2>
-        <p>username:<br>
-        <input type="text" name="username"></p>
-        <p>password:<br>
-        <input type="password" name="password"></p>
-        {% if incorrect_pass %}
-        <p style="color:red;">incorrect password</p>
-        {% endif %}    
-        <input type="submit" value="login">
-        <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
-    </form>
-    {% endif %}
-</center>
+{% extends "layout.html" %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Messageboard</title>
+</head>
+<body>
+    {% block content %}
+    <center>        
+        {% if session.username %}
+            <p>Welcome to the site, {{ session.username }}!</p>
+            {% if threads %}
+                <p>Your threads:</p>
+                {% for thread in threads %}
+                    <hr>
+                    <p>
+                        <a href="/threads/{{ thread.id }}">
+                            <h2>{{ thread.title }}</h2>
+                        </a> 
+                        <p>
+                            {{ thread.content }}
+                        </p>
+                        <p>
+                            posted at {{ thread.created_at }}
+                        </p>
+                        <p>
+                            messages: {{ thread.message_count }}
+                        </p>
+                    </p>
+                {% endfor %}
+                <hr>
+            {% else %}
+                <p>Looks like you don't have any threads yet!</p>
+                <hr>
+            {% endif %}
+        {% else %}
+            <form action="/login" method="POST">
+                <h2>Welcome!</h2>
+                <p>Username:<br>
+                <input type="text" name="username"></p>
+                <p>Password:<br>
+                <input type="password" name="password"></p>
+                {% if incorrect_pass %}
+                    <p style="color:red;">Incorrect password</p>
+                {% endif %}    
+                <input type="submit" value="Login">
+                <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+            </form>
+        {% endif %}
+    </center>
+    {% endblock %}
+</body>
+</html>
