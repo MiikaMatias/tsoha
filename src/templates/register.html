@@ -29,7 +29,6 @@
     <p style="color:red;">password is weak; add more different letters</p>
     {% endif %}
 
-
     <p>retype password:<br>
     <input type="password" name="retype_password"></p>    
     {% if incorrect_pass %}
@@ -37,5 +36,6 @@
     {% endif %}
 
     <input type="submit" value="register">
+    <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
 </form>
     

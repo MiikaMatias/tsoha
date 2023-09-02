@@ -1,5 +1,5 @@
 from flask import Flask, request, flash
-from flask import redirect, render_template, request, session
+from flask import redirect, render_template, request, session, abort
 from flask_sqlalchemy import SQLAlchemy
 from database.threads import get_threads, get_thread_by_id, get_threads_by_username, get_thread_ids
 from database.messages import get_messages
@@ -8,6 +8,7 @@ from sqlalchemy.sql import text
 from tools.validate import get_wrong_string
 from tools.tools import get_latests_path
 from os import environ as env
+from secrets import token_hex
 
 SECRET_KEY = env['SECRET_KEY']
 DATABASE_USERNAME= env['DATABASE_USERNAME']
@@ -17,7 +18,6 @@ DATABASE_SERVICE = env['DATABASE_SERVICE_NAME']
 DATABASE_NAME= env['DATABASE_NAME']
 
 DATABASE_URL = f"postgresql://{DATABASE_USERNAME}:{DATABASE_PASSWORD}@{DATABASE_SERVICE}:{DATABASE_PORT}/{DATABASE_NAME}"
-print(DATABASE_URL)
 
 app = Flask(__name__)
 
@@ -70,6 +70,7 @@ def login():
     try:
         if password_compare(username, password, db):
             session["username"] = username
+            session["csrf_token"] = token_hex(16)
             return redirect("/threads")
         else:
             if latest_path == '/threads':
@@ -77,11 +78,12 @@ def login():
             elif latest_path == '/loginpage':
                 return redirect("/loginpage?incorrect_pass=True")
     except TypeError:
-        return redirect('/threads')
+        return redirect('/threads?incorrect_pass=True')
 
 @app.route("/logout", methods=['GET'])
 def logout():
     del session["username"]
+    del session["csrf_token"]
     return redirect("/threads")
 
 @app.route("/nodb", methods=['GET'])
@@ -98,8 +100,11 @@ def register():
     wrong_string = get_wrong_string(email, username, password, retype_password, db)
 
     if len(wrong_string) == 0:
-        insert_user(email,username, password, db)
-        return redirect('/loginpage')
+        id = insert_user(email,username, password, db)
+        session["username"] = username
+        session["user_id"] = id
+        session["csrf_token"] = token_hex(16)
+        return redirect(f'/')
     else:
         return redirect(f'/register/menu?{wrong_string}')
     
@@ -112,6 +117,8 @@ def send_message(id):
             flash('write content', 'error')
             return redirect(f'/threads/{id}')
         # migrate to components | rename components
+        if session["csrf_token"] != request.form["csrf_token"]:
+            abort(403)
         sql = "INSERT INTO messages (thread_id, owner_id, content, created_at) VALUES (:id, :owner_id, :content, NOW());"
         db.session.execute(text(sql), {"id":id, "owner_id":owner_id, "content":content})
         db.session.commit()
@@ -132,6 +139,8 @@ def create_thread():
         if content == '':
             flash('write content', 'error')
             return redirect('/threads')
+        if session["csrf_token"] != request.form["csrf_token"]:
+            abort(403)
         # migrate to components | rename components
         sql = "INSERT INTO threads (owner_id, title, content, created_at) VALUES (:owner_id, :title, :content, NOW());"
         db.session.execute(text(sql), {"owner_id":owner_id, "title": title, "content":content})
@@ -142,15 +151,38 @@ def create_thread():
 
 @app.route('/deletemessage', methods=['POST'])
 def delete_message():
-    timestamp = request.form['timestamp']
-    username = request.form['username']
+    if session["csrf_token"] != request.form["csrf_token"]:
+        abort(403)
+    id = request.form['msg_id']
+    owner_id = session['user_id']
 
-    sql = """DELETE FROM messages
-             WHERE created_at = (:timestamp)
-             AND username = (:username);"""
+    sql = """UPDATE messages
+             SET show=FALSE
+             WHERE id = (:id)
+             AND owner_id = (:owner_id);"""
 
-    db.session.execute(text(sql), {"username":username, "timestamp": timestamp})
+    db.session.execute(text(sql), {"owner_id":owner_id, "id": id})
+    db.session.commit()
 
+    return redirect('/threads')
+
+@app.route('/deletethread', methods=['POST'])
+def delete_thread():
+    if session["csrf_token"] != request.form["csrf_token"]:
+        abort(403)
+
+    id = request.form['thread_id']
+    owner_id = session['user_id']
+
+    sql = """UPDATE threads
+             SET show=FALSE
+             WHERE id = (:id)
+             AND owner_id = (:owner_id);"""
+
+    db.session.execute(text(sql), {"owner_id":owner_id, "id": id})
+    db.session.commit()
+
+    return redirect('/threads')
 
 
 

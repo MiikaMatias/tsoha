@@ -9,6 +9,7 @@
 <p>password:<br>
 <input type="password" name="password"></p>
 <input type="submit" value="login">
+<input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
 </form>
 {% endif %}
 
@@ -39,8 +40,13 @@
         {{ message.owner }}
         by: {{ message.username }} at {{ message.created_at }}
     </p>
-    <a href="/deletemessage" > <p style="font-size : 12px;" >delete</p></a>
-    {% endfor %}
+    <form id="deleteForm" action="/deletemessage" method="POST">
+        <input type="hidden" name="msg_id" value="{{ message.id }}">
+        <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+        <a href="#" onclick="document.getElementById('deleteForm').submit(); return false;">
+          <p style="font-size: 12px;">delete</p>          
+    </form>
+{% endfor %}
     <hr>
 <center>
     <form action=/sendmessage/{{ thread.id }} method="POST">
@@ -49,7 +55,8 @@
             <textarea name="content" rows="3" cols="40"></textarea>
         <br>
         <input type="submit" value="Send">
-        </form>
+        <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+    </form>
 
 {% with messages = get_flashed_messages() %}
 {% if messages %}

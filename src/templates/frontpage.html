@@ -3,15 +3,16 @@
 <a href="/logout" > <p style="font-size : 12px;" >sign out</p></a>
 {% else %}
 <form action="/login" method="POST">
-<p>username:<br>
-<input type="text" name="username"></p>
-<p>password:<br>
-<input type="password" name="password"></p>
-{% if incorrect_pass %}
-<p style="color:red;">incorrect password</p>
-{% endif %}
-<input type="submit" value="login">
-<a href="/register/menu" > <p>register</p></a>
+    <p>username:<br>
+    <input type="text" name="username"></p>
+    <p>password:<br>
+    <input type="password" name="password"></p>
+    {% if incorrect_pass %}
+    <p style="color:red;">incorrect password</p>
+    {% endif %}
+    <input type="submit" value="login">
+    <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+    <a href="/register/menu" > <p>register</p></a>
 </form>
 {% endif %}
 
@@ -37,6 +38,7 @@
                 <textarea name="content" rows="3" cols="40"></textarea>
             <br>
         <input type="submit" value="send">
+        <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
     </form>
 
     {% with messages = get_flashed_messages() %}
@@ -57,7 +59,7 @@
     {% for thread in threads %}
     <hr>
     <p>
-        <a href=/threads/{{ thread.id }}>
+        <a href="/threads/{{ thread.id }}"">
             <h2>{{ thread.title }}</h2>
         </a> 
         <p>
@@ -66,6 +68,12 @@
         <p>
             by {{ thread.username }} at {{ thread.created_at }}
         </p>
+        <form id="deleteForm" action="/deletethread" method="POST">
+            <input type="hidden" name="thread_id" value="{{ thread.id }}">
+            <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+            <a href="#" onclick="document.getElementById('deleteForm').submit(); return false;">
+              <p style="font-size: 12px;">delete</p>          
+        </form>
     </p>
     {% endfor %}
     </hr>
