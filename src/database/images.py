@@ -8,11 +8,6 @@ def upload_image(uploaded_file, db):
     db.session.execute(text(sql), {"image_data": image_data})
     db.session.commit()
 
-    sql = "SELECT id FROM images WHERE image_data=(:image_data);"
+    sql = "SELECT id FROM images WHERE image_data = (:image_data);"
     id = int(db.session.execute(text(sql), {"image_data": image_data}).fetchone()[0])
     return id
-
-
-
-
-

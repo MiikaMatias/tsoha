@@ -13,8 +13,6 @@ from database.images import upload_image
 from sqlalchemy.sql import text
 from tools.validate import get_wrong_string
 from os import environ as env
-import base64
-import logging
 from secrets import token_hex
 
 SECRET_KEY = env["SECRET_KEY"]
@@ -232,3 +230,4 @@ def delete_thrd():
     delete_thread(id, owner_id, db)
 
     return redirect(request.referrer)
+

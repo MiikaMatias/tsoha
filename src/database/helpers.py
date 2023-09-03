@@ -19,7 +19,7 @@ def make_image_readable_thread(result):
         
         modified_result.append(thread_dict)
 
-    return modified_result  
+    return modified_result
 
 def make_image_readable_message(result):
     modified_result = []
@@ -39,4 +39,4 @@ def make_image_readable_message(result):
         
         modified_result.append(thread_dict)
 
-    return modified_result  
+    return modified_result
