@@ -9,31 +9,36 @@
 <body>
     {% block content %}
     <h1 align="center">
-        <a href="/threads">Messageboard</a>
+        <a href="/threads/{{ category }}">{{ category }}</a>
     </h1>
 
-    <h2>{{ thread.title }}</h2>
-    <p>{{ thread.content }}</p>
-
-    {% for message in messages %}
-        <hr>
-        <h3>{{ message.title }}</h3>
-        <p>{{ message.content }}</p>
-        <p>{{ message.owner }} by: {{ message.username }} at {{ message.created_at }}</p>
-        <form id="deleteForm" action="/deletemessage" method="POST">
-            <input type="hidden" name="msg_id" value="{{ message.id }}">
-            <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
-            <a href="#" onclick="document.getElementById('deleteForm').submit(); return false;">
-                <p style="font-size: 12px;">Delete</p>
-            </a>
-        </form>
-    {% endfor %}
-    <hr>
+    <div class="thread-container">
+        <div class="image-container">
+            <img src="data:image/png;base64,{{ thread.image_data_base64 }}">
+        </div>
+        <div class="content-container">
+            <h2><a>{{ thread.title }}</a></h2>
+            <p>{{ thread.content }}</p>
+            <p>by {{ thread.username }} at {{ thread.created_at }}</p>
+            {% if thread.username == current_user %}
+            <form id="deleteForm" action="/deletethread" method="POST">
+                <input type="hidden" name="thread_id" value="{{ thread.id }}">
+                <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+                <a href="#" onclick="document.getElementById('deleteForm').submit(); return false;">
+                    <p style="font-size: 12px;">Delete</p>
+                </a>
+            </form>
+            {% endif %}
+        </div>
+    </div> 
 
     <center>
-        <form action="/sendmessage/{{ category }}/{{ id }}" method="POST">
+        <form action="/sendmessage/{{ category }}/{{ id }}" method="POST" enctype="multipart/form-data">
             <label for="content">Message:</label><br>
             <textarea name="content" rows="3" cols="40"></textarea><br>
+            <div></div>
+            <input type="file" name="image" id="image" accept="image/png" required="required">
+            <div></div>
             <input type="submit" value="Send">
             <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
         </form>
@@ -48,6 +53,29 @@
         {% endif %}
         {% endwith %}
     </center>
+        {% for message in messages %}
+        <hr>
+        <div class="message-container">
+            <div class="image-container">
+                <img src="data:image/png;base64,{{ message.image_data_base64 }}">
+            </div>
+            <div class="content-container">
+                <h3>{{ message.title }}</h3>
+                <p>{{ message.content }}</p>
+                <p>{{ message.owner }} by: {{ message.username }} at {{ message.created_at }}</p>
+                {% if message.username == current_user %}
+                <form class="delete-form" action="/deletemessage" method="POST">
+                    <input type="hidden" name="msg_id" value="{{ message.id }}">
+                    <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+                    <a href="#" onclick="document.querySelector('.delete-form').submit(); return false;">
+                        <p class="delete-link">Delete</p>
+                    </a>
+                </form>
+                {% endif %}
+            </div>
+        </div>
+    {% endfor %}
+    <hr>
     {% endblock %}
 </body>
 </html>

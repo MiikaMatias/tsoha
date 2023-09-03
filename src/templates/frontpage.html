@@ -18,7 +18,7 @@
                 <label for="content">Content:</label><br>
                 <textarea name="content" rows="3" cols="40"></textarea><br>
                 <div></div>
-                <input type="file" name="image" id="image" accept="image/*" required="f">
+                <input type="file" name="image" id="image" accept="image/png" required="required">
                 <div></div>
                 <input type="submit" value="Send">
                 <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
@@ -41,20 +41,25 @@
     <section>
         <h2>Threads</h2>
         {% for thread in threads %}
-        <article>
-            <h2><a href="/threads/{{ current_category }}/{{ thread.id }}">{{ thread.title }}</a></h2>
-            <p>{{ thread.content }}</p>
-            <p>by {{ thread.username }} at {{ thread.created_at }}</p>
-            {% if thread.username == current_user %}
-            <form id="deleteForm" action="/deletethread" method="POST">
-                <input type="hidden" name="thread_id" value="{{ thread.id }}">
-                <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
-                <a href="#" onclick="document.getElementById('deleteForm').submit(); return false;">
-                    <p style="font-size: 12px;">Delete</p>
-                </a>
-            </form>
-            {% endif %}
-        </article>
+        <div class="thread-container">
+            <div class="image-container">
+                <img src="data:image/png;base64,{{ thread.image_data_base64 }}">
+            </div>
+            <div class="content-container">
+                <h2><a href="/threads/{{ current_category }}/{{ thread.id }}">{{ thread.title }}</a></h2>
+                <p>{{ thread.content }}</p>
+                <p>by {{ thread.username }} at {{ thread.created_at }}</p>
+                {% if thread.username == current_user %}
+                <form id="deleteForm" action="/deletethread" method="POST">
+                    <input type="hidden" name="thread_id" value="{{ thread.id }}">
+                    <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+                    <a href="#" onclick="document.getElementById('deleteForm').submit(); return false;">
+                        <p style="font-size: 12px;">Delete</p>
+                    </a>
+                </form>
+                {% endif %}
+            </div>
+        </div>        
         <hr>
         {% endfor %}
     </section>

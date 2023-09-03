@@ -15,20 +15,25 @@
                 <p>Your threads:</p>
                 {% for thread in threads %}
                     <hr>
-                    <p>
-                        <a href="/threads/{{ thread.name }}/{{ thread.id }}">
-                            <h2>{{ thread.title }}</h2>
-                        </a> 
-                        <p>
-                            {{ thread.content }}
-                        </p>
-                        <p>
-                            posted at {{ thread.created_at }}
-                        </p>
-                        <p>
-                            messages: {{ thread.message_count }}
-                        </p>
-                    </p>
+                    <div class="thread-container">
+                        <div class="image-container">
+                            <img src="data:image/jpg;base64,{{ thread.image_data }}" alt="{{ thread.image_data }}">
+                        </div>
+                        <div class="content-container">
+                            <a href="/threads/{{ thread.name }}/{{ thread.id }}">
+                                <h2>{{ thread.title }}</h2>
+                            </a>
+                            <p>
+                                {{ thread.content }}
+                            </p>
+                            <p>
+                                posted at {{ thread.created_at }}
+                            </p>
+                            <p>
+                                messages: {{ thread.message_count }}
+                            </p>
+                        </div>
+                    </div>
                 {% endfor %}
                 <hr>
             {% else %}

@@ -108,6 +108,29 @@
             top: 0;
             right: 200px; /* Width of the sidebar */
         }
+
+        .thread-container {
+            display: flex;
+            align-items: flex-start; /* Align items at the top vertically */
+        }
+
+        .image-container {
+            flex: 0 0 auto;
+            margin-right: 10px;
+        }
+
+        .image-container img {
+            max-width: 200%;
+            max-height: 200px;
+            height: auto;
+        }
+
+        .content-container {
+            flex: 1;
+            display: flex; /* Display content items vertically */
+            flex-direction: column; /* Stack items vertically */
+        }
+
     </style>    
 </head>
 <body>

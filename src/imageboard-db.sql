@@ -38,8 +38,8 @@ CREATE TABLE messages (
     id SERIAL PRIMARY KEY,
     thread_id INTEGER REFERENCES threads(id),
     owner_id INTEGER REFERENCES users(id),
+    image_id INTEGER REFERENCES images(id),
     content VARCHAR(5000),
-    attachment_id INTEGER REFERENCES images(id),
     created_at TIMESTAMP DEFAULT NOW(),
     show BOOLEAN DEFAULT TRUE
 );

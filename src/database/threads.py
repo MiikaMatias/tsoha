@@ -1,4 +1,8 @@
 from sqlalchemy import text
+import base64
+from database.helpers import make_image_readable_thread
+
+
 
 def get_thread_answers(thread_id, db):
     sql = f"SELECT id FROM messages WHERE id = (:id) AND show=TRUE;"
@@ -7,13 +11,14 @@ def get_thread_answers(thread_id, db):
     return len(result)
 
 def get_threads_by_category(db, category):
-    sql = """SELECT threads.id, threads.owner_id, threads.image_id, threads.title, threads.created_at, threads.content, users.username 
+    sql = """SELECT threads.id, threads.owner_id, threads.image_id, threads.title, threads.created_at, threads.content, users.username, images.image_data
              FROM threads 
              JOIN users ON users.id = threads.owner_id
              JOIN categories ON threads.category=categories.id
+             JOIN images ON threads.image_id=images.id
              WHERE threads.show=TRUE AND categories.name=(:category);"""
-    result = db.session.execute(text(sql), {"category":category}).fetchall()
-    return result
+    result = db.session.execute(text(sql), {"category": category}).fetchall()
+    return make_image_readable_thread(result)
 
 def get_thread_ids(db):
     sql = f"SELECT id FROM threads WHERE show=TRUE;"
@@ -38,13 +43,30 @@ def get_threads_by_username(username, db):
     return result
 
 def get_thread_by_id(id, category, db):
-    sql = f"""SELECT threads.id, threads.owner_id, threads.image_id, threads.title, threads.created_at, threads.content 
+    sql = f"""SELECT threads.id, threads.owner_id, threads.image_id, threads.title, threads.created_at, threads.content, users.username, images.image_data
             FROM threads 
+            JOIN users ON users.id = threads.owner_id
             JOIN categories ON threads.category=categories.id
+            JOIN images ON threads.image_id=images.id
             WHERE threads.id = (:id) AND threads.show=TRUE AND categories.name=(:category);
             """
     result = db.session.execute(text(sql), {"id":id, "category":category}).fetchone()
-    return result
+
+    thread_id, owner_id, image_id, title, created_at, content, username, image_data = result
+    image_data_base64 = base64.b64encode(image_data).decode("utf-8")
+    
+    thread_dict = {
+        'id': thread_id,
+        'owner_id': owner_id,
+        'image_id': image_id,
+        'title': title,
+        'created_at': created_at,
+        'content': content,
+        'username': username,
+        'image_data_base64': image_data_base64
+    }
+    
+    return thread_dict  
 
 def insert_thread(owner_id, title, image_id, content, category_id, db):
     sql = """INSERT INTO threads (owner_id, title, image_id, content, category, created_at) 

@@ -2,14 +2,16 @@ from flask import Flask, request, flash
 from flask import redirect, render_template, request, session, abort
 from flask_sqlalchemy import SQLAlchemy
 from database.threads import get_threads_by_category, get_thread_by_id, get_threads_by_username, get_thread_ids, insert_thread
-from database.messages import get_messages
-from database.categories import get_categories, get_category_id, get_description
+from database.messages import get_messages, insert_message
+from database.categories import get_categories, get_category_id, get_description, allowed_categories
 from database.users import insert_user, password_compare, get_user_id
 from database.images import upload_image
 from sqlalchemy.sql import text
 from tools.validate import get_wrong_string
 from tools.tools import get_latests_path
 from os import environ as env
+import base64
+import logging
 from secrets import token_hex
 
 SECRET_KEY = env['SECRET_KEY']
@@ -42,25 +44,29 @@ def landing():
 
 @app.route('/threads/<string:category>/<int:id>', methods=['GET'])
 def get_thread(category, id):
+
+    if category not in allowed_categories(db):
+        abort(404)
+
     threads = [thread[0] for thread in get_thread_ids(db)]
     if id not in threads:
         return "Thread not found", 404
     return render_template("thread.html", thread=get_thread_by_id(id, category, db), messages=get_messages(id, db), category=category, id=id)
 
-@app.route("/loginpage", methods=['GET'])
-def loginpage():
-    args = request.args
-    return render_template('login.html', incorrect_pass=args.get('incorrect_pass'))
-
 @app.route("/threads/<string:category>", methods=['GET'])
 def index(category):
+
+    if category not in allowed_categories(db):
+        abort(404)
+
     args = request.args
     desc = get_description(category, db)
     user = ''
     if 'username' in session:
         user = session['username']
+    threads = list(get_threads_by_category(db, category))
 
-    return render_template("frontpage.html", threads=get_threads_by_category(db, category), incorrect_pass=args.get('incorrect_pass'), 
+    return render_template("frontpage.html", threads=threads, incorrect_pass=args.get('incorrect_pass'), 
                            current_category=category, category_description=desc,
                            current_user=user)
 
@@ -82,7 +88,6 @@ def login():
         username = request.form["username"]
         password = request.form["password"]
         id = get_user_id(username, db)
-        latest_path = get_latests_path(request.referrer)
         if password_compare(username, password, db):
             session["username"] = username
             session["user_id"] = id
@@ -96,7 +101,7 @@ def logout():
     del session["username"]
     del session["user_id"]
     del session["csrf_token"]
-    return redirect("/")
+    return redirect(request.referrer)
 
 @app.route("/nodb", methods=['GET'])
 def nodb():
@@ -121,25 +126,42 @@ def register():
         return redirect(f'/register/menu?{wrong_string}')
     
 @app.route("/sendmessage/<string:category>/<int:id>", methods=['POST'])
-def send_message(category,id):
+def send_message(category, id):
+
+    if category not in allowed_categories(db):
+        abort(404)
+
     try:
         owner_id = session['user_id']
-        content = request.form['content']
-        if content == '':
-            flash('write content', 'error')
-            return redirect(f'/threads/{category}/{id}')
-        if session["csrf_token"] != request.form["csrf_token"]:
-            abort(403)
-        sql = "INSERT INTO messages (thread_id, owner_id, content, created_at) VALUES (:id, :owner_id, :content, NOW());"
-        db.session.execute(text(sql), {"id":id, "owner_id":owner_id, "content":content})
-        db.session.commit()
     except KeyError:
-        flash('Please sign in to comment', 'error')
-    return redirect(f'/threads/{category}/{id}')
+        flash('Please sign in to send messages', 'error')
+        return redirect(f'/threads/{category}/{id}')
+    
+    image_id = 1
+    if 'image' in request.files:
+        image = request.files['image']
+        image_id = upload_image(image, db)
+    else:
+        abort(403)
 
+    content = request.form.get('content')
+    if not content:
+        flash('Write content', 'error')
+        return redirect(f'/threads/{category}/{id}')
+
+    if session["csrf_token"] != request.form["csrf_token"]:
+        abort(403)
+
+    insert_message(id, owner_id, image_id, content, db) 
+
+    return redirect(f'/threads/{category}/{id}')
 
 @app.route("/createthread/<string:category>", methods=['POST'])
 def create_thread(category):
+
+    if category not in allowed_categories(db):
+        abort(404)
+
     try:
         owner_id = session['user_id']
     except KeyError:
@@ -147,15 +169,17 @@ def create_thread(category):
     category_id = get_category_id(category, db)
 
     image_id = 1
-    if 'image' in request.form:
-        image = request.form['image']
+    if 'image' in request.files:
+        image = request.files['image']
         image_id = upload_image(image, db)
+    else:
+        abort(403)
 
     title=''
     if 'title' in request.form:
         title = request.form['title']
-        flash('write a title', 'error')
     else:
+        flash('write a title', 'error')
         return redirect('/threads')
     
     content=''
