@@ -42,7 +42,7 @@ def get_threads_by_username(username, db):
     LEFT JOIN users ON users.id = threads.owner_id
     LEFT JOIN categories ON categories.id = threads.category_id
     WHERE users.username = (:username) AND threads.show=TRUE;
-"""
+    """
     result = db.session.execute(text(sql), {"username":username}).fetchall()
     return result
 
@@ -60,14 +60,14 @@ def get_thread_by_id(id, category, db):
     image_data_base64 = base64.b64encode(image_data).decode("utf-8")
     
     thread_dict = {
-        'id': thread_id,
-        'owner_id': owner_id,
-        'image_id': image_id,
-        'title': title,
-        'created_at': created_at,
-        'content': content,
-        'username': username,
-        'image_data_base64': image_data_base64
+        "id": thread_id,
+        "owner_id": owner_id,
+        "image_id": image_id,
+        "title": title,
+        "created_at": created_at,
+        "content": content,
+        "username": username,
+        "image_data_base64": image_data_base64
     }
     
     return thread_dict  

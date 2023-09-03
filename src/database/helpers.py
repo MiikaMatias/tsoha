@@ -7,14 +7,14 @@ def make_image_readable_thread(result):
         image_data_base64 = base64.b64encode(image_data).decode("utf-8")
         
         thread_dict = {
-            'id': thread_id,
-            'owner_id': owner_id,
-            'image_id': image_id,
-            'title': title,
-            'created_at': created_at,
-            'content': content,
-            'username': username,
-            'image_data_base64': image_data_base64
+            "id": thread_id,
+            "owner_id": owner_id,
+            "image_id": image_id,
+            "title": title,
+            "created_at": created_at,
+            "content": content,
+            "username": username,
+            "image_data_base64": image_data_base64
         }
         
         modified_result.append(thread_dict)
@@ -28,13 +28,13 @@ def make_image_readable_message(result):
         image_data_base64 = base64.b64encode(image_data).decode("utf-8")
         
         thread_dict = {
-            'id': thread_id,
-            'owner_id': owner_id,
-            'image_id': image_id,
-            'created_at': created_at,
-            'content': content,
-            'username': username,
-            'image_data_base64': image_data_base64
+            "id": thread_id,
+            "owner_id": owner_id,
+            "image_id": image_id,
+            "created_at": created_at,
+            "content": content,
+            "username": username,
+            "image_data_base64": image_data_base64
         }
         
         modified_result.append(thread_dict)

@@ -12,12 +12,12 @@ def insert_user(email, username, password, db):
     return id
 
 def password_compare(username, password, db):
-    sql = 'SELECT pass FROM users WHERE username = (:username)'
-    hashword = db.session.execute(text(sql), {'username':username}).fetchone()[0]
+    sql = "SELECT pass FROM users WHERE username = (:username)"
+    hashword = db.session.execute(text(sql), {"username":username}).fetchone()[0]
 
     return check_password_hash(hashword, password)
 
 def get_user_id(username, db):
-    sql = 'SELECT id FROM users WHERE username = (:username)'
-    id = int(db.session.execute(text(sql), {'username':username}).fetchone()[0])
+    sql = "SELECT id FROM users WHERE username = (:username)"
+    id = int(db.session.execute(text(sql), {"username":username}).fetchone()[0])
     return id
