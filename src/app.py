@@ -1,10 +1,11 @@
 from flask import Flask, request, flash
 from flask import redirect, render_template, request, session, abort
 from flask_sqlalchemy import SQLAlchemy
-from database.threads import get_threads_by_category, get_thread_by_id, get_threads_by_username, get_thread_ids
+from database.threads import get_threads_by_category, get_thread_by_id, get_threads_by_username, get_thread_ids, insert_thread
 from database.messages import get_messages
 from database.categories import get_categories, get_category_id, get_description
 from database.users import insert_user, password_compare, get_user_id
+from database.images import upload_image
 from sqlalchemy.sql import text
 from tools.validate import get_wrong_string
 from tools.tools import get_latests_path
@@ -54,8 +55,14 @@ def loginpage():
 @app.route("/threads/<string:category>", methods=['GET'])
 def index(category):
     args = request.args
-    desc = get_description()
-    return render_template("frontpage.html", threads=get_threads_by_category(db, category), incorrect_pass=args.get('incorrect_pass'), current_category=category, category_description=desc)
+    desc = get_description(category, db)
+    user = ''
+    if 'username' in session:
+        user = session['username']
+
+    return render_template("frontpage.html", threads=get_threads_by_category(db, category), incorrect_pass=args.get('incorrect_pass'), 
+                           current_category=category, category_description=desc,
+                           current_user=user)
 
 @app.route("/register/menu", methods=['GET'])
 def register_menu():
@@ -71,23 +78,18 @@ def register_menu():
 
 @app.route("/login", methods=["POST"])
 def login():
-    username = request.form["username"]
-    password = request.form["password"]
-    id = get_user_id(username, db)
-    latest_path = get_latests_path(request.referrer)
     try:
+        username = request.form["username"]
+        password = request.form["password"]
+        id = get_user_id(username, db)
+        latest_path = get_latests_path(request.referrer)
         if password_compare(username, password, db):
             session["username"] = username
             session["user_id"] = id
             session["csrf_token"] = token_hex(16)
             return redirect("/threads")
-        else:
-            if latest_path == '/threads':
-                return redirect("/threads/General?incorrect_pass=True")
-            elif latest_path == '/loginpage':
-                return redirect("/loginpage?incorrect_pass=True")
     except TypeError:
-        return redirect('/threads?incorrect_pass=True')
+        return redirect(f'{request.referrer}?incorrect_pass=True')
 
 @app.route("/logout", methods=['GET'])
 def logout():
@@ -140,23 +142,33 @@ def send_message(category,id):
 def create_thread(category):
     try:
         owner_id = session['user_id']
-        title = request.form['title']
-        category_id = get_category_id(category, db)
-        if title == '':
-            flash('write a title', 'error')
-            return redirect('/threads')
-        content = request.form['content']
-        if content == '':
-            flash('write content', 'error')
-            return redirect('/threads')
-        if session["csrf_token"] != request.form["csrf_token"]:
-            abort(403)
-        sql = """INSERT INTO threads (owner_id, title, content, category, created_at) 
-                 VALUES (:owner_id, :title, :content, :category, NOW());"""
-        db.session.execute(text(sql), {"owner_id":owner_id, "title": title, "content":content, "category":category_id})
-        db.session.commit()
     except KeyError:
         flash('Please sign in to make threads', 'error')
+    category_id = get_category_id(category, db)
+
+    image_id = 1
+    if 'image' in request.form:
+        image = request.form['image']
+        image_id = upload_image(image, db)
+
+    title=''
+    if 'title' in request.form:
+        title = request.form['title']
+        flash('write a title', 'error')
+    else:
+        return redirect('/threads')
+    
+    content=''
+    if 'content' in request.form:
+        content = request.form['content']
+    else:
+        flash('write content', 'error')
+        return redirect('/threads')
+
+    if session["csrf_token"] != request.form["csrf_token"]:
+        abort(403)
+
+    insert_thread(owner_id, title, image_id, content, category_id, db)
     return redirect(f'/threads/{category}')
 
 @app.route('/deletemessage', methods=['POST'])

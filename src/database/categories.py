@@ -12,3 +12,8 @@ def get_category_id(category, db):
     sql = 'SELECT id FROM categories WHERE name = (:category)'
     id = int(db.session.execute(text(sql), {'category':category}).fetchone()[0])
     return id
+
+def get_description(category, db):
+    sql = 'SELECT description FROM categories WHERE name = (:category)'
+    desc = db.session.execute(text(sql), {'category':category}).fetchone()[0]
+    return desc

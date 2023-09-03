@@ -12,11 +12,14 @@
         <center>
             <h2>Post New Thread To {{ current_category }}:</h2>
             <h3>{{ category_description }}</h3>
-            <form action="/createthread/{{ current_category }}" method="POST">
+            <form action="/createthread/{{ current_category }}" method="POST" enctype="multipart/form-data">
                 <label for="title">Title:</label><br>
                 <textarea name="title" rows="1" cols="25"></textarea><br>
                 <label for="content">Content:</label><br>
                 <textarea name="content" rows="3" cols="40"></textarea><br>
+                <div></div>
+                <input type="file" name="image" id="image" accept="image/*" required="f">
+                <div></div>
                 <input type="submit" value="Send">
                 <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
             </form>
@@ -42,6 +45,7 @@
             <h2><a href="/threads/{{ current_category }}/{{ thread.id }}">{{ thread.title }}</a></h2>
             <p>{{ thread.content }}</p>
             <p>by {{ thread.username }} at {{ thread.created_at }}</p>
+            {% if thread.username == current_user %}
             <form id="deleteForm" action="/deletethread" method="POST">
                 <input type="hidden" name="thread_id" value="{{ thread.id }}">
                 <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
@@ -49,6 +53,7 @@
                     <p style="font-size: 12px;">Delete</p>
                 </a>
             </form>
+            {% endif %}
         </article>
         <hr>
         {% endfor %}

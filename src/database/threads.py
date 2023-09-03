@@ -7,7 +7,7 @@ def get_thread_answers(thread_id, db):
     return len(result)
 
 def get_threads_by_category(db, category):
-    sql = """SELECT threads.id, threads.owner_id, threads.title, threads.created_at, threads.content, users.username 
+    sql = """SELECT threads.id, threads.owner_id, threads.image_id, threads.title, threads.created_at, threads.content, users.username 
              FROM threads 
              JOIN users ON users.id = threads.owner_id
              JOIN categories ON threads.category=categories.id
@@ -23,7 +23,7 @@ def get_thread_ids(db):
 def get_threads_by_username(username, db):
     sql = """SELECT 
     counts.message_count,
-    threads.id, threads.owner_id, threads.title, threads.created_at, threads.content, users.username, categories.name
+    threads.id, threads.owner_id, threads.image_id, threads.title, threads.created_at, threads.content, users.username, categories.name
     FROM threads
     LEFT JOIN (
         SELECT thread_id, COUNT(*) AS message_count 
@@ -38,10 +38,16 @@ def get_threads_by_username(username, db):
     return result
 
 def get_thread_by_id(id, category, db):
-    sql = f"""SELECT threads.id, threads.owner_id, threads.title, threads.created_at, threads.content 
+    sql = f"""SELECT threads.id, threads.owner_id, threads.image_id, threads.title, threads.created_at, threads.content 
             FROM threads 
             JOIN categories ON threads.category=categories.id
             WHERE threads.id = (:id) AND threads.show=TRUE AND categories.name=(:category);
             """
     result = db.session.execute(text(sql), {"id":id, "category":category}).fetchone()
     return result
+
+def insert_thread(owner_id, title, image_id, content, category_id, db):
+    sql = """INSERT INTO threads (owner_id, title, image_id, content, category, created_at) 
+                VALUES (:owner_id, :title, :image_id, :content, :category, NOW());"""
+    db.session.execute(text(sql), {"owner_id":owner_id, "title": title, "image_id":image_id,"content":content, "category":category_id})
+    db.session.commit()
