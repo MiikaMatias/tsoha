@@ -210,7 +210,7 @@ def create_thread(category):
 
 
 @app.route('/deletemessage', methods=['POST'])
-def delete_message():
+def delete_msg():
     if session["csrf_token"] != request.form["csrf_token"]:
         abort(403)
     id = request.form['msg_id']
@@ -222,7 +222,7 @@ def delete_message():
 
 
 @app.route('/deletethread', methods=['POST'])
-def delete_thread():
+def delete_thrd():
     if session["csrf_token"] != request.form["csrf_token"]:
         abort(403)
 

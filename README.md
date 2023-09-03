@@ -10,7 +10,7 @@ While I was completely cognizant of the fact that utilising a kubernetes based e
 
 I learned a lot about databases, but I felt like I was doing something I was reasonably familliar with already without adding these extra components. I'd estimate that some 50-60% of the allocated time for the project went into managing this infrastructure. Due to this time spent around these more "advanced technologies", the project was very useful for my personal development as a programmer, and a professional ( I use a lot of this tech at work ); it was also more exciting! It would heavily dismay me if this additional learning experience would cost me in grading, however. 
 
-Some features may have not been implemented (upvotes/downvotes; in depth user statistics) at the expense of the kubernetes infrastrucuture, but this was a conscious call, as implementing them seemed quite trivial. I dislike doing trivial problems, as they do not help me learn. This project – if anything – was certainly not that due to the aforementioned reasons. 
+Some features may have not been implemented (upvotes/downvotes; in depth user statistics; advanced sorting) at the expense of the kubernetes infrastrucuture, but this was a conscious call, as implementing them seemed quite trivial. I dislike doing trivial problems, as they do not help me learn. This project – if anything – was certainly not that due to the aforementioned reasons. 
 
 I would plead that you'd take me prioritizing my own learning goals into account as you grade the project, where applicable!
 

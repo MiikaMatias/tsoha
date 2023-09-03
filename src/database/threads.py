@@ -11,12 +11,16 @@ def get_thread_answers(thread_id, db):
     return len(result)
 
 def get_threads_by_category(db, category):
-    sql = """SELECT threads.id, threads.owner_id, threads.image_id, threads.title, threads.created_at, threads.content, users.username, images.image_data
-             FROM threads 
-             JOIN users ON users.id = threads.owner_id
-             JOIN categories ON threads.category_id=categories.id
-             JOIN images ON threads.image_id=images.id
-             WHERE threads.show=TRUE AND categories.name=(:category);"""
+    sql = """SELECT threads.id, threads.owner_id, threads.image_id, threads.title, threads.created_at, threads.content, users.username, images.image_data, COUNT(messages.id) AS message_count
+        FROM threads 
+        JOIN users ON users.id = threads.owner_id
+        JOIN categories ON threads.category_id = categories.id
+        JOIN images ON threads.image_id = images.id
+        LEFT JOIN messages ON threads.id = messages.thread_id
+        WHERE threads.show = TRUE AND categories.name = (:category)
+        GROUP BY threads.id, threads.owner_id, threads.image_id, threads.title, threads.created_at, threads.content, users.username, images.image_data
+        ORDER BY message_count DESC;
+        """
     result = db.session.execute(text(sql), {"category": category}).fetchall()
     return make_image_readable_thread(result)
 

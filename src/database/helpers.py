@@ -3,7 +3,7 @@ import base64
 def make_image_readable_thread(result):
     modified_result = []
     for row in result:
-        thread_id, owner_id, image_id, title, created_at, content, username, image_data = row
+        thread_id, owner_id, image_id, title, created_at, content, username, image_data, count = row
         image_data_base64 = base64.b64encode(image_data).decode("utf-8")
         
         thread_dict = {
