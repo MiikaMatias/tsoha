@@ -25,7 +25,7 @@
 
         body {
             margin: 0;
-            padding: 175px 0px 70px 0px;
+            padding: 175px 0px 90px 0px;
             background-color: #b3e9b6;
             color: #000000;
             font-family: Arial, sans-serif;
@@ -113,7 +113,7 @@
 <body>
     <header>
         <center>
-            <h1><a href="/threads">Messageboard</a></h1>
+            <h1><a>Messageboard</a></h1>
         </center>
         {% if session.username %}
             <nav>
@@ -142,16 +142,9 @@
     <!-- Sidebar -->
     <div class="sidebar">
         <h2>Categories</h2>
-        <a href="#">Category 1</a>
-        <a href="#">Category 2</a>
-        <a href="#">Category 3</a>
-        <a href="#">Category 4</a>
-        <a href="#">Category 5</a>
-        <a href="#">Category 6</a>
-        <a href="#">Category 7</a>
-        <a href="#">Category 8</a>
-        <a href="#">Category 9</a>
-        <a href="#">Category 10</a>
+        {% for category in categories %}
+            <a href="/threads/{{ category.name }}">{{ category.name }}</a>
+        {% endfor %}
     </div>
 
     <!-- Main Content -->

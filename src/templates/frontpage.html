@@ -4,14 +4,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Messageboard</title>
+    <title>Messageboard – {{ current_category }}</title>
 </head>
 <body>
     {% block content %}
     <section>
         <center>
-            <h2>Post New Thread:</h2>
-            <form action="/createthread" method="POST">
+            <h2>Post New Thread To {{ current_category }}:</h2>
+            <h3>{{ category_description }}</h3>
+            <form action="/createthread/{{ current_category }}" method="POST">
                 <label for="title">Title:</label><br>
                 <textarea name="title" rows="1" cols="25"></textarea><br>
                 <label for="content">Content:</label><br>
@@ -38,7 +39,7 @@
         <h2>Threads</h2>
         {% for thread in threads %}
         <article>
-            <h2><a href="/threads/{{ thread.id }}">{{ thread.title }}</a></h2>
+            <h2><a href="/threads/{{ current_category }}/{{ thread.id }}">{{ thread.title }}</a></h2>
             <p>{{ thread.content }}</p>
             <p>by {{ thread.username }} at {{ thread.created_at }}</p>
             <form id="deleteForm" action="/deletethread" method="POST">

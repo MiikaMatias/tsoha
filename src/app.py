@@ -1,8 +1,9 @@
 from flask import Flask, request, flash
 from flask import redirect, render_template, request, session, abort
 from flask_sqlalchemy import SQLAlchemy
-from database.threads import get_threads, get_thread_by_id, get_threads_by_username, get_thread_ids
+from database.threads import get_threads_by_category, get_thread_by_id, get_threads_by_username, get_thread_ids
 from database.messages import get_messages
+from database.categories import get_categories, get_category_id, get_description
 from database.users import insert_user, password_compare, get_user_id
 from sqlalchemy.sql import text
 from tools.validate import get_wrong_string
@@ -26,29 +27,35 @@ app.config["SQLALCHEMY_DATABASE_URI"] = DATABASE_URL
 
 db = SQLAlchemy(app)
 
+
+@app.context_processor
+def context_processor():
+    return dict(categories=get_categories(db))
+
 @app.route('/', methods=['GET'])
 def landing():
     try:
         return render_template('landing.html', threads=get_threads_by_username(session['username'], db))
     except KeyError:
-        return redirect('/threads')
+        return redirect('/threads/General')
 
-@app.route('/threads/<int:id>', methods=['GET'])
-def get_thread(id):
+@app.route('/threads/<string:category>/<int:id>', methods=['GET'])
+def get_thread(category, id):
     threads = [thread[0] for thread in get_thread_ids(db)]
     if id not in threads:
         return "Thread not found", 404
-    return render_template("thread.html", thread=get_thread_by_id(id, db), messages=get_messages(id, db))
+    return render_template("thread.html", thread=get_thread_by_id(id, category, db), messages=get_messages(id, db), category=category, id=id)
 
 @app.route("/loginpage", methods=['GET'])
 def loginpage():
     args = request.args
     return render_template('login.html', incorrect_pass=args.get('incorrect_pass'))
 
-@app.route("/threads", methods=['GET'])
-def index():
+@app.route("/threads/<string:category>", methods=['GET'])
+def index(category):
     args = request.args
-    return render_template("frontpage.html", threads=get_threads(db), incorrect_pass=args.get('incorrect_pass'))
+    desc = get_description()
+    return render_template("frontpage.html", threads=get_threads_by_category(db, category), incorrect_pass=args.get('incorrect_pass'), current_category=category, category_description=desc)
 
 @app.route("/register/menu", methods=['GET'])
 def register_menu():
@@ -66,15 +73,17 @@ def register_menu():
 def login():
     username = request.form["username"]
     password = request.form["password"]
+    id = get_user_id(username, db)
     latest_path = get_latests_path(request.referrer)
     try:
         if password_compare(username, password, db):
             session["username"] = username
+            session["user_id"] = id
             session["csrf_token"] = token_hex(16)
             return redirect("/threads")
         else:
             if latest_path == '/threads':
-                return redirect("/threads?incorrect_pass=True")
+                return redirect("/threads/General?incorrect_pass=True")
             elif latest_path == '/loginpage':
                 return redirect("/loginpage?incorrect_pass=True")
     except TypeError:
@@ -83,8 +92,9 @@ def login():
 @app.route("/logout", methods=['GET'])
 def logout():
     del session["username"]
+    del session["user_id"]
     del session["csrf_token"]
-    return redirect("/threads")
+    return redirect("/")
 
 @app.route("/nodb", methods=['GET'])
 def nodb():
@@ -108,15 +118,14 @@ def register():
     else:
         return redirect(f'/register/menu?{wrong_string}')
     
-@app.route("/sendmessage/<int:id>", methods=['POST'])
-def send_message(id):
+@app.route("/sendmessage/<string:category>/<int:id>", methods=['POST'])
+def send_message(category,id):
     try:
-        owner_id = get_user_id(session['username'], db)
+        owner_id = session['user_id']
         content = request.form['content']
         if content == '':
             flash('write content', 'error')
-            return redirect(f'/threads/{id}')
-        # migrate to components | rename components
+            return redirect(f'/threads/{category}/{id}')
         if session["csrf_token"] != request.form["csrf_token"]:
             abort(403)
         sql = "INSERT INTO messages (thread_id, owner_id, content, created_at) VALUES (:id, :owner_id, :content, NOW());"
@@ -124,14 +133,15 @@ def send_message(id):
         db.session.commit()
     except KeyError:
         flash('Please sign in to comment', 'error')
-    return redirect(f'/threads/{id}')
+    return redirect(f'/threads/{category}/{id}')
 
 
-@app.route("/createthread", methods=['POST'])
-def create_thread():
+@app.route("/createthread/<string:category>", methods=['POST'])
+def create_thread(category):
     try:
-        owner_id = get_user_id(session['username'], db)
+        owner_id = session['user_id']
         title = request.form['title']
+        category_id = get_category_id(category, db)
         if title == '':
             flash('write a title', 'error')
             return redirect('/threads')
@@ -141,13 +151,13 @@ def create_thread():
             return redirect('/threads')
         if session["csrf_token"] != request.form["csrf_token"]:
             abort(403)
-        # migrate to components | rename components
-        sql = "INSERT INTO threads (owner_id, title, content, created_at) VALUES (:owner_id, :title, :content, NOW());"
-        db.session.execute(text(sql), {"owner_id":owner_id, "title": title, "content":content})
+        sql = """INSERT INTO threads (owner_id, title, content, category, created_at) 
+                 VALUES (:owner_id, :title, :content, :category, NOW());"""
+        db.session.execute(text(sql), {"owner_id":owner_id, "title": title, "content":content, "category":category_id})
         db.session.commit()
     except KeyError:
         flash('Please sign in to make threads', 'error')
-    return redirect('/threads')
+    return redirect(f'/threads/{category}')
 
 @app.route('/deletemessage', methods=['POST'])
 def delete_message():
@@ -164,7 +174,7 @@ def delete_message():
     db.session.execute(text(sql), {"owner_id":owner_id, "id": id})
     db.session.commit()
 
-    return redirect('/threads')
+    return redirect(request.referrer)
 
 @app.route('/deletethread', methods=['POST'])
 def delete_thread():
@@ -182,7 +192,7 @@ def delete_thread():
     db.session.execute(text(sql), {"owner_id":owner_id, "id": id})
     db.session.commit()
 
-    return redirect('/threads')
+    return redirect(request.referrer)
 
 
 

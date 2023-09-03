@@ -31,7 +31,7 @@
     <hr>
 
     <center>
-        <form action="/sendmessage/{{ thread.id }}" method="POST">
+        <form action="/sendmessage/{{ category }}/{{ id }}" method="POST">
             <label for="content">Message:</label><br>
             <textarea name="content" rows="3" cols="40"></textarea><br>
             <input type="submit" value="Send">
