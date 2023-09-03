@@ -8,9 +8,8 @@ echo Built $POSTGRES_CONTAINER_NAME
 bash build/build_imageboard.sh
 echo Built $POSTGRES_IMAGE_NAME
 
-sudo kubectl delete all --all
-
 bash deploy/deploy.sh
+sudo kubectl delete deployment imageboard-app
 sudo kubectl apply -f deployment.yml
 echo Deployed $POSTGRES_CONTAINER_NAME
 echo Deployed $POSTGRES_IMAGE_NAME

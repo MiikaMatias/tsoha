@@ -26,7 +26,7 @@ CREATE TABLE threads (
     id SERIAL PRIMARY KEY,
     owner_id INTEGER REFERENCES users(id),
     image_id INTEGER REFERENCES images(id),
-    category INTEGER REFERENCES categories(id),
+    category_id INTEGER REFERENCES categories(id),
     title VARCHAR(50),
     created_at TIMESTAMP DEFAULT NOW(),
     content VARCHAR(5000),

@@ -16,3 +16,12 @@ def insert_message(thread_id, owner_id, image_id, content, db):
                 VALUES (:thread_id, :owner_id, :image_id, :content, NOW());"""
     db.session.execute(text(sql), {"thread_id":thread_id, "owner_id": owner_id, "image_id":image_id,"content":content})
     db.session.commit()
+
+def delete_message(owner_id, id, db):
+    sql = """UPDATE messages
+            SET show=FALSE
+            WHERE id = (:id)
+            AND owner_id = (:owner_id);"""
+
+    db.session.execute(text(sql), {"owner_id":owner_id, "id": id})
+    db.session.commit()

@@ -1,0 +1,137 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: postgres-pv-volume
+  labels:
+    type: local
+spec:
+  storageClassName: manual
+  capacity:
+    storage: 2Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  hostPath:
+    path: "/mnt/data"
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: postgres-pv-claim
+spec:
+  storageClassName: manual
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: imageboard-db
+  labels:
+    app: imageboard-db
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: imageboard-db
+  template:
+    metadata:
+      labels:
+        app: imageboard-db
+    spec:
+      containers:
+      - name: psql-db
+        image: imageboard-db 
+        ports: 
+        - containerPort: 5432
+        env:
+        - name: POSTGRES_DB
+          value: postgres
+        - name: POSTGRES_USER
+          value: postgres
+        - name: POSTGRES_PASSWORD
+          value: pass
+        imagePullPolicy: Never
+        volumeMounts:
+          - name: postgres-persistent-storage
+            mountPath: /var/lib/postgresql
+      volumes:
+        - name: postgres-persistent-storage
+          persistentVolumeClaim:
+            claimName: postgres-pv-claim
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: imageboard-app
+  labels:
+    app: imageboard-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: imageboard-app
+  template:
+    metadata:
+      labels:
+        app: imageboard-app
+    spec:
+      containers:
+      - name: imageboard-app
+        image: imageboard-app 
+        imagePullPolicy: Never
+        env:
+          - name: SECRET_KEY
+            value: lol
+          - name: DATABASE_USERNAME
+            value: postgres
+          - name: DATABASE_PASSWORD
+            value: pass
+          - name: DATABASE_PORT
+            value: "5432"
+          - name: DATABASE_SERVICE_NAME
+            value: postgres-service
+          - name: DATABASE_NAME
+            value: postgres
+        ports:
+          - containerPort: 5000
+        volumeMounts:
+          - name: postgres-persistent-storage
+            mountPath: /var/lib/postgresql
+      volumes:
+        - name: postgres-persistent-storage
+          persistentVolumeClaim:
+            claimName: postgres-pv-claim
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: imageboard-app
+  labels:
+    app: imageboard-app
+spec:
+  type: NodePort
+  selector:
+    app: imageboard-app
+  ports:
+  - port: 5000
+    targetPort: 5000
+    nodePort: 30010
+    protocol: TCP
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres-service
+spec:
+  selector:
+    app: imageboard-db
+  ports:
+    - protocol: TCP
+      port: 5432 
+      targetPort: 5432
+  type: ClusterIP 
