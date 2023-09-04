@@ -47,6 +47,6 @@ This is a secondary method of testing the project if the link to the production 
 1) Set up your own postgres database
 2) apply imageboard.sql schema to it
 3) make database url connect to it and comment out redundancies
-![image](https://github.com/MiikaMatias/tsoha/assets/100348027/68d56aaf-9b50-477c-84b5-2f8a527e8919)
+![image](https://github.com/MiikaMatias/tsoha/assets/100348027/5a6689b0-bcea-4e03-b59c-5647a81acbff)
 4) create a venv in python and install requirements.txt
 5) run python3 -m flask run in src
