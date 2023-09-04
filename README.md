@@ -42,3 +42,11 @@ This is a secondary method of testing the project if the link to the production 
 3) CD to /src and run 'bash redeploy.sh'; uses local_test_deployment.yml which contains sample values and is NOT meant to be deployed online
 4) Use the ip address provided at the end of the redeploy script and go to ´http://[minikube-ip]:30010´
 5) you should now be able to access the project
+
+## Alternative for kubernetes
+1) Set up your own postgres database
+2) apply imageboard.sql schema to it
+3) make database url connect to it and comment out redundancies
+![image](https://github.com/MiikaMatias/tsoha/assets/100348027/68d56aaf-9b50-477c-84b5-2f8a527e8919)
+4) create a venv in python and install requirements.txt
+5) run python3 -m flask run in src
